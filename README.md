@@ -82,16 +82,25 @@ Use uma VPS Linux (Ubuntu 24.04) com **pelo menos 4 GB de RAM** — o build roda
 
 ### 1. Preparar o servidor (uma vez)
 
-```bash
+Não é preciso instalar PostgreSQL, Java nem Node no servidor: tudo roda em containers Docker
+(o banco é o serviço `db` do `docker-compose.yml`). O script abaixo faz toda a preparação.
+
+No PowerShell do seu computador:
+
+```powershell
+scp C:\Users\julio\metonimia-app\deploy\preparar-servidor.sh root@IP_DO_SERVIDOR:/root/
 ssh root@IP_DO_SERVIDOR
-apt update && apt upgrade -y
-curl -fsSL https://get.docker.com | sh
-ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
-git clone https://github.com/JulioKhichfy/metonimia-app.git
-cd metonimia-app
-cp .env.example .env
-nano .env        # preencha senhas e chaves (openssl rand -base64 48)
 ```
+
+Já no servidor:
+
+```bash
+bash preparar-servidor.sh
+```
+
+Ele instala Docker, firewall e fail2ban, cria swap se faltar memória, baixa o projeto em
+`/opt/metonimia-app`, gera o `.env` com senhas aleatórias (pergunta o domínio e a senha do painel),
+confere o DNS, sobe os containers e agenda o backup diário. Pode ser executado de novo sem problema.
 
 ### 2. Apontar o domínio (DNS)
 
@@ -110,26 +119,22 @@ Confira a propagação com `nslookup xn--metonmia-g2a.com.br` antes do passo 3.
 A versão **sem acento** (`metonimia.com.br`) é outro domínio: só você pode registrá-la, mas é
 preciso registrar e apontar à parte. Depois, inclua-a em `REDIRECT_DOMAINS` no `.env`.
 
-### 3. Subir
+### 3. Conferir
 
-```bash
-docker compose up -d --build
-docker compose logs -f api     # Ctrl+C para sair
-```
-
-O Caddy emite o certificado HTTPS sozinho na primeira visita. Acesse `https://metonímia.com.br/admin`.
+O script já sobe tudo. O Caddy emite o certificado HTTPS sozinho assim que o DNS propagar.
+Acesse `https://metonímia.com.br/admin`. Para acompanhar: `cd /opt/metonimia-app && docker compose logs -f`.
 
 ### 4. Depois de cada `git push`
 
 ```bash
-cd metonimia-app && ./deploy/atualizar.sh
+cd /opt/metonimia-app && ./deploy/atualizar.sh
 ```
 
 ### Backup
 
 ```bash
-./deploy/backup.sh                       # banco + fotos/vídeos em ./backups (guarda 14 dias)
-crontab -e   # 0 3 * * * cd /root/metonimia-app && ./deploy/backup.sh
+cd /opt/metonimia-app
+./deploy/backup.sh       # manual; o script de preparação já agendou um backup diário às 3h
 ```
 
 Copie a pasta `backups/` para fora do servidor de vez em quando.

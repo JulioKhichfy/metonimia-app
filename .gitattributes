@@ -1,0 +1,7 @@
+# Scripts e arquivos do servidor sempre com quebra de linha Linux (LF),
+# mesmo editando no Windows — evita o erro "$'\r': command not found".
+*.sh       text eol=lf
+Caddyfile  text eol=lf
+*.Dockerfile text eol=lf
+Dockerfile text eol=lf
+.env*      text eol=lf
