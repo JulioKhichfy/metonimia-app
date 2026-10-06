@@ -1,0 +1,203 @@
+<div class="site">
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <header>
+    <div class="nav-wrap">
+      <a class="brand" href="#topo" aria-label="Metonímia Produções Acessíveis — início">
+        <img src="imagens/logo.png" alt="Metonímia Produções Acessíveis" width="480" height="337" />
+      </a>
+      <button
+        type="button"
+        class="menu-toggle"
+        aria-controls="mainnav"
+        [attr.aria-expanded]="menuAberto()"
+        (click)="alternarMenu()"
+      >
+        ☰ Menu
+      </button>
+      <nav id="mainnav" aria-label="Menu principal" [class.open]="menuAberto()">
+        <ul>
+          @for (item of menu; track item.href) {
+            <li><a [href]="item.href" (click)="fecharMenu()">{{ item.texto }}</a></li>
+          }
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <span id="topo"></span>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>Comunicação que <span class="accent">inclui</span> todo mundo.</h1>
+        <p class="lead">A Metonímia transforma conteúdo em experiência acessível — para que ninguém fique de fora.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#contato">Fale conosco</a>
+          <a class="btn btn-ghost" href="#manifesto">Nosso manifesto</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img
+          src="imagens/logo_img.png"
+          alt="Símbolo da Metonímia: dois círculos que se encontram, em magenta e preto."
+          width="420"
+          height="280"
+        />
+      </div>
+    </div>
+  </section>
+
+  <main id="conteudo">
+    <section class="section" id="missao">
+      <p class="eyebrow">Missão</p>
+      <h2>Por que existimos</h2>
+      <p>
+        Tornar a comunicação verdadeiramente acessível, removendo barreiras que impedem pessoas de receber, compreender e
+        participar da informação. Trabalhamos para que cada produção — cultural, educacional ou institucional — alcance
+        todo o seu público, sem exceção.
+      </p>
+    </section>
+
+    <section class="section" id="visao">
+      <p class="eyebrow">Visão</p>
+      <h2>Onde queremos chegar</h2>
+      <p>
+        Ser referência em produções acessíveis no Brasil, mostrando que acessibilidade não é um acréscimo ao final do
+        processo, mas parte do projeto desde a primeira ideia. Um mundo em que conteúdo acessível seja o padrão, e não a
+        exceção.
+      </p>
+    </section>
+
+    <section class="section" id="proposito">
+      <p class="eyebrow">Propósito</p>
+      <h2>O que nos move</h2>
+      <p>
+        Acreditamos que o acesso à informação e à cultura é um direito. Existimos para garantir que esse direito se
+        realize na prática — com técnica, sensibilidade e respeito a cada pessoa que recebe o que produzimos.
+      </p>
+    </section>
+
+    <section class="section" id="valores">
+      <p class="eyebrow">Nossos valores</p>
+      <h2>Princípios que guiam cada trabalho</h2>
+      <div class="grid">
+        <div class="card" id="diversidade">
+          <h3>Diversidade</h3>
+          <p>Valorizamos diferentes corpos, vozes e histórias. A pluralidade é o ponto de partida de tudo o que criamos.</p>
+        </div>
+        <div class="card" id="profissionalismo">
+          <h3>Profissionalismo</h3>
+          <p>Rigor técnico, prazos respeitados e padrões de qualidade em audiodescrição, legendagem, Libras e demais recursos.</p>
+        </div>
+        <div class="card" id="inclusao">
+          <h3>Inclusão</h3>
+          <p>Pensamos em todas as pessoas desde o início do projeto, não como um ajuste de última hora.</p>
+        </div>
+        <div class="card" id="simplicidade">
+          <h3>Simplicidade</h3>
+          <p>Clareza acima de complexidade. Comunicar bem é também tornar a mensagem fácil de entender.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="impacto">
+      <p class="eyebrow">Impacto Social</p>
+      <h2>O efeito do nosso trabalho</h2>
+      <p>
+        Cada produção acessível amplia o alcance de uma mensagem e abre portas para quem costuma ser deixado de lado.
+        Medimos o nosso sucesso pelo número de pessoas que passam a ter acesso ao que antes lhes era negado.
+      </p>
+    </section>
+
+    <section class="section" id="compromisso">
+      <p class="eyebrow">Compromisso Social</p>
+      <h2>Nossa responsabilidade</h2>
+      <p>
+        Assumimos o compromisso de promover acessibilidade de forma contínua, colaborar com pessoas com deficiência em
+        todas as etapas e manter a inclusão no centro das nossas decisões — não como tendência, mas como dever.
+      </p>
+    </section>
+
+    <app-agenda tipo="PALESTRA" />
+    <app-agenda tipo="EVENTO" />
+
+    <section id="manifesto">
+      <p class="eyebrow">Manifesto</p>
+      <h2>O que defendemos</h2>
+      <p>
+        Acreditamos que toda mensagem merece chegar a todas as pessoas. Que acessibilidade é cuidado, é técnica e é
+        respeito. Que incluir não é favor — é justiça.
+      </p>
+      <p>Por isso produzimos com escuta, com método e com afeto. Porque comunicar é, antes de tudo, um ato de encontro.</p>
+      <blockquote>“Acessibilidade não é o destino final de uma produção. É o caminho inteiro.”</blockquote>
+    </section>
+
+    <section class="section" id="contato">
+      <p class="eyebrow">Fale Conosco</p>
+      <h2>Vamos conversar</h2>
+      <p>
+        Tem um projeto em mente ou quer saber como tornar o seu conteúdo acessível? Envie uma mensagem — respondemos com
+        prazer.
+      </p>
+
+      <div class="contact-grid">
+        <div>
+          <div
+            #feedback
+            class="feedback"
+            [class.show]="estado() === 'ok' || estado() === 'erro'"
+            [class.erro]="estado() === 'erro'"
+            role="status"
+            aria-live="polite"
+          >
+            {{ mensagem() }}
+          </div>
+          <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+            <label for="name">Nome</label>
+            <input id="name" type="text" formControlName="name" autocomplete="name" required />
+            @if (form.controls.name.touched && form.controls.name.invalid) {
+              <span class="campo-erro">Informe seu nome.</span>
+            }
+
+            <label for="email">E-mail</label>
+            <input id="email" type="email" formControlName="email" autocomplete="email" required />
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <span class="campo-erro">Informe um e-mail válido, como nome&#64;exemplo.com.</span>
+            }
+
+            <label for="message">Mensagem</label>
+            <textarea id="message" formControlName="message" required></textarea>
+            @if (form.controls.message.touched && form.controls.message.invalid) {
+              <span class="campo-erro">Escreva sua mensagem.</span>
+            }
+
+            <input class="honey" type="text" formControlName="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+            <button type="submit" class="btn btn-primary" [disabled]="estado() === 'enviando'">
+              {{ estado() === 'enviando' ? 'Enviando...' : 'Enviar mensagem' }}
+            </button>
+          </form>
+        </div>
+
+        <aside class="contact-aside">
+          <h3>Prefere o WhatsApp?</h3>
+          <p>Fale com a gente direto pelo aplicativo, de segunda a sexta.</p>
+          <a class="btn wa-btn" [href]="whatsappUrl" target="_blank" rel="noopener">Abrir WhatsApp</a>
+          <p class="wa-numero">{{ contato.whatsappExibicao }}</p>
+          <p class="wa-numero">
+            Ou escreva para <a [href]="'mailto:' + contato.email">{{ contato.email }}</a>
+          </p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="foot-inner">
+      <img src="imagens/logo_img.png" alt="Símbolo da Metonímia Produções Acessíveis" width="420" height="280" />
+      <p>Metonímia Produções Acessíveis</p>
+      <p class="small">© {{ ano }} Metonímia. Comunicação acessível para todas as pessoas.</p>
+    </div>
+  </footer>
+</div>

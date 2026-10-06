@@ -1,0 +1,53 @@
+/* Card de palestra/evento — usado no site e na pré-visualização do painel */
+.pub-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(18px, 3vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+.pub-cabecalho p { margin: 0; }
+.pub-data { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; line-height: 1.25; text-transform: none; }
+.pub-data time::first-letter { text-transform: uppercase; }
+.pub-local { font-size: 1.08rem; opacity: .9; margin-top: 4px !important; }
+.pub-rotulo { font-weight: 700; }
+.pub-fotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.pub-fotos a { display: block; border-radius: 12px; overflow: hidden; }
+.pub-fotos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.pub-video { margin: 0; }
+.pub-video video { width: 100%; max-height: 70vh; border-radius: 12px; background: #000; display: block; }
+.pub-video-embed iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; display: block; }
+.pub-video figcaption { font-size: .95rem; margin-top: 6px; opacity: .85; }
+
+/* HTML gerado pelo editor (Quill) */
+.rich-content {
+  font-size: 1.12rem;
+  overflow-wrap: anywhere;
+  p, ul, ol, blockquote, h2, h3 { margin: 0 0 .7em; max-width: 68ch; }
+  > :last-child { margin-bottom: 0; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  a { color: inherit; text-decoration: underline; }
+  blockquote { border-left: 4px solid var(--magenta); padding-left: 14px; font-style: italic; }
+  ol, ul { padding-left: 1.4em; }
+  li[data-list="bullet"] { list-style-type: disc; }
+  li[data-list="ordered"] { list-style-type: decimal; }
+  .ql-ui { display: none; }
+  .ql-size-small { font-size: .78em; }
+  .ql-size-large { font-size: 1.4em; }
+  .ql-size-huge { font-size: 2em; line-height: 1.2; }
+  .ql-font-serif { font-family: Georgia, "Times New Roman", serif; }
+  .ql-font-monospace { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .ql-font-trebuchet { font-family: var(--font-display); }
+  .ql-align-center, .ql-align-right, .ql-align-justify { max-width: none; }
+  .ql-align-center { text-align: center; }
+  .ql-align-right { text-align: right; }
+  .ql-align-justify { text-align: justify; }
+  @for $i from 1 through 4 { .ql-indent-#{$i} { padding-left: #{$i * 1.5}em; } }
+}

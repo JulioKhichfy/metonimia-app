@@ -1,0 +1,14 @@
+# Desenvolvimento local: banco H2 em arquivo (./data), sem instalar nada.
+# Login padrão: admin / admin12345 (só vale aqui).
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/metonimia-dev;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: ""
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:chave-de-desenvolvimento-local-nao-use-em-producao}
+  admin:
+    usuario: ${ADMIN_USERNAME:admin}
+    senha: ${ADMIN_PASSWORD:admin12345}

@@ -1,0 +1,10 @@
+# Produção: PostgreSQL. Todas as variáveis vêm do arquivo .env do docker compose.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+logging:
+  level:
+    root: INFO

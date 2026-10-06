@@ -1,0 +1,161 @@
+<form class="pf" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <!-- 1. Data e hora -->
+  <fieldset class="pf-bloco">
+    <legend>1. Data e hora</legend>
+    <div class="pf-linha">
+      <mat-form-field appearance="outline">
+        <mat-label>Data</mat-label>
+        <input matInput [matDatepicker]="calendario" formControlName="data" placeholder="06/10/2026" required />
+        <mat-hint>dd/mm/aaaa</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="calendario" />
+        <mat-datepicker #calendario />
+        <mat-error>Escolha a data.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Hora</mat-label>
+        <input matInput [matTimepicker]="relogio" formControlName="hora" placeholder="19:00" required />
+        <mat-hint>Horário de Brasília</mat-hint>
+        <mat-timepicker-toggle matIconSuffix [for]="relogio" />
+        <mat-timepicker #relogio interval="15min" />
+        <mat-error>Informe a hora (ex.: 19:00).</mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <!-- 2. Local -->
+  <fieldset class="pf-bloco">
+    <legend>2. Local</legend>
+    <mat-form-field appearance="outline" class="pf-largo">
+      <mat-label>Endereço</mat-label>
+      <input matInput formControlName="local" placeholder="Centro Cultural, Rua Exemplo, 100 — Rio de Janeiro/RJ" required />
+      <mat-error>Informe o local.</mat-error>
+    </mat-form-field>
+  </fieldset>
+
+  <!-- 3. Descrição -->
+  <fieldset class="pf-bloco">
+    <legend>3. Descrição</legend>
+    <div class="pf-fundo">
+      <span id="rotulo-fundo">Cor de fundo</span>
+      <div class="pf-amostras" role="group" aria-labelledby="rotulo-fundo">
+        @for (f of fundos; track f.cor) {
+          <button
+            type="button"
+            class="pf-amostra"
+            [style.background]="f.cor"
+            [class.ativa]="form.controls.corFundo.value.toLowerCase() === f.cor"
+            [attr.aria-label]="f.nome"
+            [attr.aria-pressed]="form.controls.corFundo.value.toLowerCase() === f.cor"
+            (click)="form.controls.corFundo.setValue(f.cor)"
+          ></button>
+        }
+        <label class="pf-cor-livre">
+          <input type="color" formControlName="corFundo" aria-label="Outra cor de fundo" />
+          Outra cor
+        </label>
+      </div>
+    </div>
+    <quill-editor
+      class="pf-editor"
+      formControlName="descricaoHtml"
+      format="html"
+      theme="snow"
+      placeholder="Escreva a descrição…"
+      [modules]="modulosQuill"
+      [customOptions]="opcoesQuill"
+      [styles]="estiloEditor()"
+    />
+    <p class="pf-dica">
+      Selecione um trecho para mudar fonte, tamanho, cor, negrito ou itálico. O fundo do editor mostra como ficará no site.
+    </p>
+  </fieldset>
+
+  <!-- 4. Fotos -->
+  <fieldset class="pf-bloco">
+    <legend>4. Fotos</legend>
+    <label class="pf-arquivo" mat-stroked-button>
+      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple (change)="aoEscolherArquivos($event, 'IMAGEM')" />
+      <mat-icon>add_photo_alternate</mat-icon> Inserir fotos
+    </label>
+    <span class="pf-dica">JPG, PNG, WEBP ou GIF, até {{ limiteImagemMb }} MB cada.</span>
+
+    @if (fotos().length) {
+      <ul class="pf-midias">
+        @for (item of fotos(); track item.midia.url) {
+          <li class="pf-midia">
+            <img [src]="item.midia.url" alt="" />
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Descrição da imagem (texto alternativo)</mat-label>
+              <input matInput [value]="item.midia.descricao ?? ''" (input)="descreverMidia(item.indice, $event)" maxlength="500" />
+            </mat-form-field>
+            <button mat-icon-button type="button" (click)="removerMidia(item.indice)" aria-label="Remover foto">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </fieldset>
+
+  <!-- 5. Vídeos -->
+  <fieldset class="pf-bloco">
+    <legend>5. Vídeos</legend>
+    <div class="pf-linha pf-linha-video">
+      <label class="pf-arquivo" mat-stroked-button>
+        <input type="file" accept="video/mp4,video/webm" multiple (change)="aoEscolherArquivos($event, 'VIDEO')" />
+        <mat-icon>video_call</mat-icon> Enviar vídeo
+      </label>
+      <span class="pf-dica">MP4 ou WEBM, até {{ limiteVideoMb }} MB. Para vídeos longos, prefira um link do YouTube.</span>
+    </div>
+    <div class="pf-linha">
+      <mat-form-field appearance="outline" class="pf-largo" subscriptSizing="dynamic">
+        <mat-label>Link do YouTube ou Vimeo</mat-label>
+        <input matInput [formControl]="linkVideo" placeholder="https://youtu.be/..." (keydown.enter)="$event.preventDefault(); adicionarLink()" />
+        @if (erroLink()) {
+          <mat-hint class="pf-hint-erro">{{ erroLink() }}</mat-hint>
+        }
+      </mat-form-field>
+      <button mat-stroked-button type="button" (click)="adicionarLink()">Adicionar link</button>
+    </div>
+
+    @if (videos().length) {
+      <ul class="pf-midias">
+        @for (item of videos(); track item.midia.url) {
+          <li class="pf-midia">
+            @if (item.midia.tipo === 'VIDEO') {
+              <video [src]="item.midia.url" preload="metadata" muted></video>
+            } @else {
+              <span class="pf-link">{{ item.midia.url }}</span>
+            }
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Legenda do vídeo (opcional)</mat-label>
+              <input matInput [value]="item.midia.descricao ?? ''" (input)="descreverMidia(item.indice, $event)" maxlength="500" />
+            </mat-form-field>
+            <button mat-icon-button type="button" (click)="removerMidia(item.indice)" aria-label="Remover vídeo">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </fieldset>
+
+  @for (u of enviando(); track u.id) {
+    <div class="pf-upload" role="status">
+      <span>Enviando {{ u.nome }} ({{ u.progresso }}%)</span>
+      <mat-progress-bar mode="determinate" [value]="u.progresso" />
+    </div>
+  }
+
+  @if (erro()) {
+    <p class="pf-erro" role="alert">{{ erro() }}</p>
+  }
+
+  <div class="pf-acoes">
+    <button mat-button type="button" (click)="cancelado.emit()">Cancelar</button>
+    <button mat-flat-button type="submit" [disabled]="salvando() || enviando().length > 0">
+      {{ salvando() ? 'Salvando…' : 'Salvar ' + r().singular }}
+    </button>
+  </div>
+</form>

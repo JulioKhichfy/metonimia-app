@@ -1,0 +1,52 @@
+<article
+  class="pub-card"
+  [id]="ancora()"
+  [style.background-color]="publicacao().corFundo"
+  [style.color]="corTexto()"
+>
+  <header class="pub-cabecalho">
+    <p class="pub-data">
+      <time [attr.datetime]="publicacao().dataHora">{{ publicacao().dataHora | dataHora: 'longa' }}</time>
+    </p>
+    <p class="pub-local"><span class="pub-rotulo">Local:</span> {{ publicacao().local }}</p>
+  </header>
+
+  @if (publicacao().descricaoHtml) {
+    <div class="rich-content" [innerHTML]="publicacao().descricaoHtml | safeHtml"></div>
+  }
+
+  @if (fotos().length) {
+    <div class="pub-fotos">
+      @for (foto of fotos(); track foto.url; let i = $index) {
+        <a [href]="foto.url" target="_blank" rel="noopener">
+          <img [src]="foto.url" [alt]="textoAlternativo(foto, i)" loading="lazy" decoding="async" />
+        </a>
+      }
+    </div>
+  }
+
+  @for (video of videos(); track video.url) {
+    <figure class="pub-video">
+      <video [src]="video.url" controls preload="metadata" playsinline></video>
+      @if (video.descricao) {
+        <figcaption>{{ video.descricao }}</figcaption>
+      }
+    </figure>
+  }
+
+  @for (video of incorporados(); track video.url) {
+    <figure class="pub-video pub-video-embed">
+      <iframe
+        [src]="video.seguro"
+        [title]="video.descricao || 'Vídeo'"
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+      @if (video.descricao) {
+        <figcaption>{{ video.descricao }}</figcaption>
+      }
+    </figure>
+  }
+</article>

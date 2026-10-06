@@ -1,0 +1,35 @@
+# Configuração comum. Os perfis "dev" (H2) e "prod" (PostgreSQL) completam este arquivo.
+spring:
+  application:
+    name: metonimia-api
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none        # o esquema é criado pelo Flyway (db/migration)
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 210MB
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: 8080
+  forward-headers-strategy: framework   # lê o IP real enviado pelo Caddy
+  tomcat:
+    max-swallow-size: 220MB
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:}
+    validade: 8h
+  admin:
+    usuario: ${ADMIN_USERNAME:}
+    senha: ${ADMIN_PASSWORD:}
+  upload:
+    diretorio: ${APP_UPLOAD_DIR:./uploads}

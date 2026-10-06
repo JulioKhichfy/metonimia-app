@@ -1,0 +1,66 @@
+<div class="lista-topo">
+  <h1>{{ r().titulo }}</h1>
+  <button mat-flat-button type="button" (click)="criando.set(true)" [disabled]="criando()">
+    <mat-icon>add</mat-icon> ADICIONAR {{ r().singular.toUpperCase() }}
+  </button>
+</div>
+
+@if (criando()) {
+  <section class="lista-novo">
+    <h2>Nov{{ r().artigo }} {{ r().singular }}</h2>
+    <app-publicacao-form [tipo]="tipo()" (salvo)="aoCriar($event)" (cancelado)="criando.set(false)" />
+  </section>
+}
+
+@switch (estado()) {
+  @case ('carregando') {
+    <div class="lista-carregando"><mat-spinner diameter="40" /></div>
+  }
+  @case ('erro') {
+    <p class="admin-intro">
+      Não foi possível carregar {{ r().artigo }}s {{ r().plural }}.
+      <button mat-button type="button" (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+  @default {
+    <mat-accordion class="lista-acordeao">
+      @for (p of ordenadas(); track p.id) {
+        <mat-expansion-panel (closed)="editandoId() === p.id && editandoId.set(null)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ p.dataHora | dataHora }}</mat-panel-title>
+            <mat-panel-description>
+              <span class="lista-local">{{ p.local }}</span>
+              <span class="selo" [class.selo-futura]="futura(p)">{{ futura(p) ? 'Futura' : 'Passada' }}</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+            @if (editandoId() === p.id) {
+              <app-publicacao-form
+                [tipo]="tipo()"
+                [publicacao]="p"
+                (salvo)="aoAtualizar($event)"
+                (cancelado)="editandoId.set(null)"
+              />
+            } @else {
+              <app-publicacao-card [publicacao]="p" />
+              <div class="lista-acoes">
+                <button mat-stroked-button type="button" (click)="editandoId.set(p.id)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+                <button mat-stroked-button type="button" class="botao-perigo" (click)="excluir(p)">
+                  <mat-icon>delete</mat-icon> Excluir
+                </button>
+              </div>
+            }
+          </ng-template>
+        </mat-expansion-panel>
+      } @empty {
+        <p class="admin-intro">
+          Nenhum{{ r().artigo === 'a' ? 'a' : '' }} {{ r().singular }} cadastrad{{ r().artigo }}. Use “Adicionar
+          {{ r().singular }}” para criar {{ r().artigo === 'a' ? 'a primeira' : 'o primeiro' }}.
+        </p>
+      }
+    </mat-accordion>
+  }
+}

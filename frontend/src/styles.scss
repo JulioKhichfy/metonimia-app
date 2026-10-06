@@ -1,0 +1,54 @@
+@use '@angular/material' as mat;
+@use './styles/site';
+@use './styles/publicacao';
+@use './styles/admin';
+
+/* Tema do Angular Material (usado só no painel administrativo) */
+html {
+  color-scheme: light;
+  @include mat.theme((
+    color: (
+      primary: mat.$magenta-palette,
+      tertiary: mat.$violet-palette,
+      theme-type: light,
+    ),
+    typography: (
+      plain-family: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+      brand-family: '"Trebuchet MS", "Segoe UI", system-ui, sans-serif',
+    ),
+    density: 0,
+  ));
+}
+
+/* Identidade da marca — tirada da logo */
+:root {
+  --magenta: #cf2ee0;
+  --magenta-deep: #a013ad;
+  --ink: #111111;
+  --ink-soft: #2a2a2a;
+  --paper: #ffffff;
+  --mist: #f6eef8;
+  --line: #e7d6ec;
+  --focus: #7b00ff;
+  --radius: 18px;
+  --maxw: 1080px;
+  --font-display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.7;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+@media (min-width: 780px) { body { font-size: 19px; } }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }

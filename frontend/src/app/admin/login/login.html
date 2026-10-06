@@ -1,0 +1,40 @@
+<div class="admin admin-login">
+  <form class="login-card" [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+    <img src="imagens/logo.png" alt="Metonímia Produções Acessíveis" width="480" height="337" />
+    <h1>Painel de conteúdo</h1>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Usuário</mat-label>
+      <input matInput formControlName="usuario" autocomplete="username" required />
+      <mat-error>Informe o usuário.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Senha</mat-label>
+      <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senha" autocomplete="current-password" required />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="mostrarSenha.set(!mostrarSenha())"
+        [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+      >
+        <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error>Informe a senha.</mat-error>
+    </mat-form-field>
+
+    @if (erro()) {
+      <p class="login-erro" role="alert">{{ erro() }}</p>
+    }
+
+    <button mat-flat-button type="submit" [disabled]="entrando()">
+      @if (entrando()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Entrar
+      }
+    </button>
+    <a routerLink="/" class="login-voltar">Voltar ao site</a>
+  </form>
+</div>

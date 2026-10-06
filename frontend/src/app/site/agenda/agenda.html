@@ -1,0 +1,39 @@
+<section class="section agenda" [id]="r().ancora">
+  <p class="eyebrow">{{ r().titulo }}</p>
+  <h2>{{ r().chamada }}</h2>
+
+  @switch (estado()) {
+    @case ('carregando') {
+      <p class="agenda-aviso" role="status">Carregando {{ r().plural }}…</p>
+    }
+    @case ('erro') {
+      <p class="agenda-aviso" role="status">
+        Não foi possível carregar {{ r().artigo }}s {{ r().plural }} agora. Tente novamente em alguns minutos.
+      </p>
+    }
+    @default {
+      <div class="agenda-bloco" [id]="r().idFuturas">
+        <h3>{{ r().tituloFuturas }}</h3>
+        @for (p of futuras(); track p.id) {
+          <app-publicacao-card [publicacao]="p" />
+        } @empty {
+          <p class="agenda-vazio">{{ r().vazioFuturas }}</p>
+        }
+      </div>
+
+      <div class="agenda-bloco" [id]="r().idPassadas">
+        <h3>{{ r().tituloPassadas }}</h3>
+        @for (p of passadasVisiveis(); track p.id) {
+          <app-publicacao-card [publicacao]="p" />
+        } @empty {
+          <p class="agenda-vazio">{{ r().vazioPassadas }}</p>
+        }
+        @if (passadas().length > passadasVisiveis().length) {
+          <button type="button" class="btn btn-ghost" (click)="verMais()">
+            Ver mais {{ r().plural }} realizad{{ r().artigo }}s
+          </button>
+        }
+      </div>
+    }
+  }
+</section>
