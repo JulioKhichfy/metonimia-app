@@ -47,6 +47,15 @@ export interface Servico {
 
 export type ServicoPayload = Pick<Servico, 'titulo' | 'descricao'>;
 
+export interface Pergunta {
+  id: number;
+  pergunta: string;
+  /** Texto simples; quebras de linha são preservadas na exibição. */
+  resposta: string;
+}
+
+export type PerguntaPayload = Pick<Pergunta, 'pergunta' | 'resposta'>;
+
 export interface Interprete {
   id: number;
   nome: string;

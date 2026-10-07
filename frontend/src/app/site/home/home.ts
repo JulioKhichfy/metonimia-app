@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, HostListener, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CONTATO } from '../../core/config';
-import { Servico } from '../../core/models';
-import { ancoraServico, dadosEstruturados, PERGUNTAS, SERVICOS_PADRAO } from '../../core/seo';
+import { Pergunta, Servico } from '../../core/models';
+import { PerguntaService } from '../../core/pergunta.service';
+import { ancoraServico, dadosEstruturados, PERGUNTAS_PADRAO, SERVICOS_PADRAO } from '../../core/seo';
 import { ServicoService } from '../../core/servico.service';
 import { Agenda } from '../agenda/agenda';
 import { VideoDestaque } from '../video-destaque/video-destaque';
@@ -29,10 +30,10 @@ export class Home {
   private readonly feedback = viewChild<ElementRef<HTMLElement>>('feedback');
 
   protected readonly contato = CONTATO;
-  /** Começa com o retrato do build (HTML pré-renderizado) e é trocado pela lista da API no navegador. */
+  /** Começam com o retrato do build (HTML pré-renderizado) e são trocados pelas listas da API no navegador. */
   protected readonly servicos = signal<Servico[]>(SERVICOS_PADRAO);
+  protected readonly perguntas = signal<Pergunta[]>(PERGUNTAS_PADRAO);
   protected readonly ancoraServico = ancoraServico;
-  protected readonly perguntas = PERGUNTAS;
   protected readonly whatsappUrl = `https://wa.me/${CONTATO.whatsappNumero}?text=${encodeURIComponent(CONTATO.whatsappMensagem)}`;
   protected readonly ano = new Date().getFullYear();
 
@@ -70,15 +71,16 @@ export class Home {
         script.id = ID_JSON_LD;
         doc.head.appendChild(script);
       }
-      script.textContent = JSON.stringify(dadosEstruturados(this.servicos())).replace(/</g, '\\u003c');
+      script.textContent = JSON.stringify(dadosEstruturados(this.servicos(), this.perguntas())).replace(/</g, '\\u003c');
     });
 
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      const sub = inject(ServicoService).listarPublicos().subscribe({
-        next: (lista) => this.servicos.set(lista),
-        error: () => {}, // mantém o retrato do build
-      });
-      inject(DestroyRef).onDestroy(() => sub.unsubscribe());
+      // Em caso de erro, mantém o retrato do build
+      const subs = [
+        inject(ServicoService).listarPublicos().subscribe({ next: (l) => this.servicos.set(l), error: () => {} }),
+        inject(PerguntaService).listarPublicas().subscribe({ next: (l) => this.perguntas.set(l), error: () => {} }),
+      ];
+      inject(DestroyRef).onDestroy(() => subs.forEach((s) => s.unsubscribe()));
     }
   }
 

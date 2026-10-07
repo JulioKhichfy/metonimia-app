@@ -1,0 +1,66 @@
+<div class="lista-topo">
+  <h1>Perguntas frequentes</h1>
+  <button mat-flat-button type="button" (click)="criando.set(true)" [disabled]="criando()">
+    <mat-icon>add</mat-icon> ADICIONAR PERGUNTA
+  </button>
+</div>
+<p class="admin-intro">
+  Aparecem na seção “Perguntas frequentes” do site, na ordem em que foram cadastradas. Boas perguntas ajudam o site a
+  aparecer no Google e nas respostas de assistentes de IA.
+</p>
+
+@if (criando()) {
+  <section class="lista-novo">
+    <h2>Nova pergunta</h2>
+    <app-pergunta-form (salvo)="aoCriar($event)" (cancelado)="criando.set(false)" />
+  </section>
+}
+
+@switch (estado()) {
+  @case ('carregando') {
+    <div class="lista-carregando"><mat-spinner diameter="40" /></div>
+  }
+  @case ('erro') {
+    <p class="admin-intro">
+      Não foi possível carregar as perguntas.
+      <button mat-button type="button" (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+  @default {
+    <mat-accordion class="lista-acordeao">
+      @for (p of itens(); track p.id) {
+        <mat-expansion-panel (closed)="editandoId() === p.id && editandoId.set(null)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ p.pergunta }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+            @if (editandoId() === p.id) {
+              <app-pergunta-form [pergunta]="p" (salvo)="aoAtualizar($event)" (cancelado)="editandoId.set(null)" />
+            } @else {
+              <!-- Pré-visualização com o mesmo visual do site -->
+              <div class="site servico-previa">
+                <div class="faq">
+                  <details open>
+                    <summary><h3>{{ p.pergunta }}</h3></summary>
+                    <p class="texto-simples">{{ p.resposta }}</p>
+                  </details>
+                </div>
+              </div>
+              <div class="lista-acoes">
+                <button mat-stroked-button type="button" (click)="editandoId.set(p.id)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+                <button mat-stroked-button type="button" class="botao-perigo" (click)="excluir(p)">
+                  <mat-icon>delete</mat-icon> Excluir
+                </button>
+              </div>
+            }
+          </ng-template>
+        </mat-expansion-panel>
+      } @empty {
+        <p class="admin-intro">Nenhuma pergunta cadastrada. Use “Adicionar pergunta” para criar a primeira.</p>
+      }
+    </mat-accordion>
+  }
+}

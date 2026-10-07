@@ -103,8 +103,9 @@
   .card h3 { font-size: 1.4rem; margin: 0 0 10px; }
   .card p { font-size: 1.12rem; margin: 0; }
 
-  .servicos-cta { margin: 24px 0 0; }
-  .servico-descricao { white-space: pre-line; } /* texto simples do painel: respeita as quebras de linha */
+  /* "> " para vencer ".section > p" (que zera a margem de cima); 24px = padding dos cards */
+  .section > .servicos-cta { margin: 24px 0 0; }
+  .servico-descricao, .texto-simples { white-space: pre-line; } /* texto simples do painel: respeita as quebras de linha */
 
   /* ---------- Vídeo de destaque ---------- */
   /* Fundo lavanda continua o degradê do topo; o vídeo fica na mesma largura do conteúdo do site */

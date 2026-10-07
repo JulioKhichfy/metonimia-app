@@ -162,10 +162,10 @@
       <p class="eyebrow">Perguntas frequentes</p>
       <h2>Dúvidas sobre Libras e acessibilidade</h2>
       <div class="faq">
-        @for (p of perguntas; track p.pergunta) {
+        @for (p of perguntas(); track p.id) {
           <details>
             <summary><h3>{{ p.pergunta }}</h3></summary>
-            <p>{{ p.resposta }}</p>
+            <p class="texto-simples">{{ p.resposta }}</p>
           </details>
         }
       </div>

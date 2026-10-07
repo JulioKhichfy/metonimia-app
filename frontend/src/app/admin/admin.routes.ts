@@ -58,6 +58,11 @@ export const ADMIN_ROUTES: Routes = [
             loadComponent: () => import('./servico-lista/servico-lista').then((m) => m.ServicoLista),
           },
           {
+            path: 'perguntas',
+            title: 'Perguntas frequentes | Painel Metonímia',
+            loadComponent: () => import('./pergunta-lista/pergunta-lista').then((m) => m.PerguntaLista),
+          },
+          {
             path: 'interpretes',
             title: 'Intérpretes | Painel Metonímia',
             loadComponent: () => import('./interprete-lista/interprete-lista').then((m) => m.InterpreteLista),

@@ -16,12 +16,13 @@ Site da **Metonímia Produções Acessíveis** com painel para publicar palestra
   com o relógio e recalcula a cada minuto.
 - **Vídeo de destaque**: logo abaixo do topo, `frontend/public/videos/depoimento_interpretelibras.mp4`
   ocupa a largura toda, começa sem som e tem controles para ligar/desligar o som e ajustar o volume.
-- **Serviços**: lidos da API (`/api/public/servicos`) e editados no painel.
+- **Serviços** e **Perguntas frequentes**: lidos da API (`/api/public/servicos`, `/api/public/perguntas`)
+  e editados no painel.
 - **Fale Conosco**: formulário enviado pelo [FormSubmit](https://formsubmit.co) para o e-mail de
   contato + botão do WhatsApp. Não passa pelo backend. E-mail e WhatsApp vêm do `.env`
   (`CONTATO_EMAIL`, `CONTATO_WHATSAPP`); no desenvolvimento local valem os padrões de
   `frontend/src/app/core/config.ts`.
-- **Painel** (`/admin`): login → botões PALESTRAS, EVENTOS, SERVIÇOS, INTÉRPRETES e BACKUP → lista em accordion
+- **Painel** (`/admin`): login → botões PALESTRAS, EVENTOS, SERVIÇOS, PERGUNTAS FREQUENTES, INTÉRPRETES e BACKUP → lista em accordion
   com Editar/Excluir → "ADICIONAR PALESTRA" com data, hora, local, descrição (editor com fonte,
   tamanho, cor, negrito, itálico e cor de fundo), fotos (com texto alternativo), vídeos (arquivo ou
   link do YouTube/Vimeo) e redes sociais. Serviços têm só título e descrição.
@@ -39,6 +40,9 @@ Site da **Metonímia Produções Acessíveis** com painel para publicar palestra
 | GET    | `/api/public/servicos`             | aberto  |
 | GET/POST | `/api/admin/servicos`            | JWT     |
 | PUT/DELETE | `/api/admin/servicos/{id}`     | JWT     |
+| GET    | `/api/public/perguntas`            | aberto  |
+| GET/POST | `/api/admin/perguntas`           | JWT     |
+| PUT/DELETE | `/api/admin/perguntas/{id}`    | JWT     |
 | GET    | `/api/admin/backup` (baixa um `.sql`) | JWT  |
 | GET    | `/api/admin/interpretes`           | JWT     |
 | POST / PUT | `/api/admin/interpretes[/{id}]` (multipart: `dados` JSON + `foto` opcional) | JWT |

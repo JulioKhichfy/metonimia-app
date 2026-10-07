@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Gera um arquivo .sql só com os dados (INSERTs) de palestras, eventos, mídias, serviços e intérpretes.
- * Contém dados pessoais dos intérpretes (LGPD): guarde o arquivo em local seguro.
+ * Gera um arquivo .sql só com os dados (INSERTs) de palestras, eventos, mídias, serviços, perguntas
+ * frequentes e intérpretes. Contém dados pessoais dos intérpretes (LGPD): guarde o arquivo em local seguro.
  * O esquema não entra: ele é recriado pelo Flyway ao subir a API. O usuário admin também
  * não entra, porque é recriado a partir das variáveis de ambiente.
  * Funciona igual no PostgreSQL (produção) e no H2 (desenvolvimento), sem depender do pg_dump.
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BackupService {
 
     /** Na ordem em que precisam ser inseridas (midia referencia publicacao). */
-    private static final List<String> TABELAS = List.of("publicacao", "midia", "servico", "interprete");
+    private static final List<String> TABELAS = List.of("publicacao", "midia", "servico", "pergunta", "interprete");
 
     private final JdbcTemplate jdbc;
 
@@ -35,13 +35,13 @@ public class BackupService {
     public String gerar() {
         StringBuilder sql = new StringBuilder();
         sql.append("""
-                -- Backup do banco da Metonímia (palestras, eventos, mídias, serviços e intérpretes)
+                -- Backup do banco da Metonímia (palestras, eventos, mídias, serviços, perguntas e intérpretes)
                 -- CONTÉM DADOS PESSOAIS (LGPD): guarde em local seguro e não compartilhe.
                 -- Gerado em %s
                 --
                 -- Para restaurar, com a API já tendo subido ao menos uma vez (o Flyway cria as tabelas):
                 --   docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" metonimia' < este-arquivo.sql
-                -- ATENÇÃO: a restauração APAGA palestras, eventos, serviços e intérpretes atuais antes de inserir os do backup.
+                -- ATENÇÃO: a restauração APAGA palestras, eventos, serviços, perguntas e intérpretes atuais antes de inserir os do backup.
                 -- Fotos e vídeos ficam em disco (volumes "uploads" e "privado") e não estão neste arquivo.
 
                 BEGIN;

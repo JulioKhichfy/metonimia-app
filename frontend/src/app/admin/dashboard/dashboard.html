@@ -16,6 +16,11 @@
     <span class="dash-titulo">SERVIÇOS</span>
     <span class="dash-texto">Criar, editar e excluir serviços</span>
   </a>
+  <a routerLink="/admin/perguntas" class="dash-botao">
+    <mat-icon aria-hidden="true">quiz</mat-icon>
+    <span class="dash-titulo">PERGUNTAS FREQUENTES</span>
+    <span class="dash-texto">Criar, editar e excluir perguntas e respostas</span>
+  </a>
   <a routerLink="/admin/interpretes" class="dash-botao">
     <mat-icon aria-hidden="true">sign_language</mat-icon>
     <span class="dash-titulo">INTÉRPRETES</span>
@@ -25,7 +30,7 @@
     <mat-icon aria-hidden="true">{{ baixando() ? 'hourglass_top' : 'backup' }}</mat-icon>
     <span class="dash-titulo">BACKUP</span>
     <span class="dash-texto">
-      {{ baixando() ? 'Gerando backup…' : 'Baixar uma cópia do banco de dados (palestras, eventos, serviços e intérpretes)' }}
+      {{ baixando() ? 'Gerando backup…' : 'Baixar uma cópia do banco de dados (palestras, eventos, serviços, perguntas e intérpretes)' }}
     </span>
   </button>
 </div>

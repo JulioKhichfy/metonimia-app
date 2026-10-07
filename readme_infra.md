@@ -940,10 +940,11 @@ docker compose up -d                                             # recria a API 
 
 O que já está no código: home pré-renderizada (legível sem JavaScript), título e descrição com as
 palavras-chave, dados estruturados schema.org (organização, serviços, perguntas frequentes),
-`robots.txt`, `sitemap.xml` e `llms.txt` (resumo para assistentes de IA). Perguntas frequentes:
-`frontend/src/app/core/seo.ts`. Serviços: editados no painel (`/admin/servicos`). O HTML
-pré-renderizado (o que robôs sem JavaScript leem) usa o retrato `SERVICOS_PADRAO` do `seo.ts`,
-porque não há API durante o build. Se os serviços mudarem muito, atualize esse retrato.
+`robots.txt`, `sitemap.xml` e `llms.txt` (resumo para assistentes de IA). Serviços e perguntas
+frequentes são editados no painel (`/admin/servicos`, `/admin/perguntas`). O HTML pré-renderizado
+(o que robôs sem JavaScript leem) usa os retratos `SERVICOS_PADRAO` e `PERGUNTAS_PADRAO` do
+`frontend/src/app/core/seo.ts`, porque não há API durante o build. Se mudarem muito no painel,
+atualize esses retratos.
 
 O que só você pode fazer:
 

@@ -170,6 +170,39 @@ class PublicacaoApiTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void perguntasFrequentes() throws Exception {
+        // a migração V5 já cadastra as perguntas iniciais
+        mvc.perform(get("/api/public/perguntas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(7)))
+                .andExpect(jsonPath("$[0].pergunta").value("Como contratar um intérprete de Libras para o meu evento?"));
+
+        String corpo = "{\"pergunta\":\"  Teste?  \",\"resposta\":\"Sim.\"}";
+        mvc.perform(post("/api/admin/perguntas").contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isUnauthorized());
+
+        String token = login();
+        String criado = mvc.perform(post("/api/admin/perguntas").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.pergunta").value("Teste?"))
+                .andReturn().getResponse().getContentAsString();
+        String id = extrair(criado, "\"id\"\\s*:\\s*(\\d+)");
+
+        mvc.perform(put("/api/admin/perguntas/" + id).header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"pergunta\":\"Outra?\",\"resposta\":\"Não.\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resposta").value("Não."));
+
+        mvc.perform(post("/api/admin/perguntas").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"pergunta\":\"x\",\"resposta\":\" \"}"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(delete("/api/admin/perguntas/" + id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
     private String login() throws Exception {
         String resposta = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"admin\",\"password\":\"admin12345\"}"))

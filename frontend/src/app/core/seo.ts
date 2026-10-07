@@ -1,5 +1,5 @@
 import { CONTATO } from './config';
-import { Servico } from './models';
+import { Pergunta, Servico } from './models';
 
 /**
  * Conteúdo para buscadores (Google) e assistentes de IA (ChatGPT, Gemini, Claude, Perplexity).
@@ -76,43 +76,49 @@ export function ancoraServico(s: Pick<Servico, 'id'>): string {
   return `servico-${s.id}`;
 }
 
-export interface Pergunta {
-  pergunta: string;
-  resposta: string;
-}
-
-export const PERGUNTAS: Pergunta[] = [
+/**
+ * Perguntas frequentes: editadas pelo painel (/admin/perguntas) e lidas da API no navegador.
+ * Esta lista é só o retrato inicial — igual ao cadastrado pela migração V5__perguntas.sql —
+ * usado no HTML pré-renderizado do build (mesmo motivo dos serviços, acima).
+ */
+export const PERGUNTAS_PADRAO: Pergunta[] = [
   {
+    id: 1,
     pergunta: 'Como contratar um intérprete de Libras para o meu evento?',
     resposta:
-      'Entre em contato com a gente pelo WhatsApp ' + CONTATO.whatsappExibicao + ' ou pelo formulário deste site. Conte a ' +
-      'data, o horário, a duração, o local (ou a plataforma, se for online) e o tipo de evento, e a gente conversa sobre ' +
-      'o número de profissionais de Libras necessários.',
+      'Entre em contato com a gente pelo WhatsApp ou pelo formulário deste site. Conte a data, o horário, a duração, o ' +
+      'local (ou a plataforma, se for online) e o tipo de evento, e a gente conversa sobre o número de profissionais de ' +
+      'Libras necessários.',
   },
   {
+    id: 2,
     pergunta: 'Qual a diferença entre tradução e interpretação em Libras?',
     resposta:
       'A interpretação acontece ao vivo, de forma simultânea, enquanto a pessoa fala — como em palestras, aulas e lives. ' +
       'A tradução é feita sobre um conteúdo já pronto, como um vídeo gravado, com tempo para estudo e revisão.',
   },
   {
+    id: 3,
     pergunta: 'Por que eventos longos precisam de mais de um intérprete de Libras?',
     resposta:
       'A interpretação simultânea exige muita concentração física e mental. Em atividades mais longas, os intérpretes se ' +
       'revezam em intervalos curtos para manter a qualidade da tradução do início ao fim.',
   },
   {
+    id: 4,
     pergunta: 'Vocês atendem eventos online?',
     resposta:
       'Sim. Atendemos eventos presenciais e online, como lives, webinars e reuniões em Zoom, Microsoft Teams e Google Meet.',
   },
   {
+    id: 5,
     pergunta: 'Com quanta antecedência devo contratar?',
     resposta:
       'Quanto antes, melhor: a agenda de profissionais de Libras costuma ficar cheia em datas de muitos eventos. Enviar ' +
       'com antecedência o roteiro, os slides e os nomes próprios que serão citados ajuda os intérpretes a se prepararem.',
   },
   {
+    id: 6,
     pergunta: 'A acessibilidade em Libras é obrigatória?',
     resposta:
       'A Lei 10.436/2002 reconhece a Libras como meio legal de comunicação no Brasil, e a Lei Brasileira de Inclusão ' +
@@ -121,6 +127,7 @@ export const PERGUNTAS: Pergunta[] = [
       'como Libras, legendagem e audiodescrição.',
   },
   {
+    id: 7,
     pergunta: 'Que outros recursos de acessibilidade a Metonímia oferece?',
     resposta:
       'Além de Libras, oferecemos legendagem para surdos e ensurdecidos (LSE), audiodescrição para pessoas cegas ou com ' +
@@ -129,7 +136,7 @@ export const PERGUNTAS: Pergunta[] = [
 ];
 
 /** Dados estruturados (schema.org) da home: organização, serviços e perguntas frequentes. */
-export function dadosEstruturados(servicos: Servico[]): object {
+export function dadosEstruturados(servicos: Servico[], perguntas: Pergunta[]): object {
   const organizacao = `${SITE_URL}/#organizacao`;
   return {
     '@context': 'https://schema.org',
@@ -195,7 +202,7 @@ export function dadosEstruturados(servicos: Servico[]): object {
         '@type': 'FAQPage',
         '@id': `${SITE_URL}/#perguntas`,
         inLanguage: 'pt-BR',
-        mainEntity: PERGUNTAS.map((p) => ({
+        mainEntity: perguntas.map((p) => ({
           '@type': 'Question',
           name: p.pergunta,
           acceptedAnswer: { '@type': 'Answer', text: p.resposta },
