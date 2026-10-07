@@ -555,10 +555,10 @@ echo "Backup salvo em backups/ ($DATA)"
   `backend/uploads/` subam para o GitHub.
 - `backend/.dockerignore` impede que `target`, `data`, `uploads` e arquivos da IDE sejam enviados
   para o build da imagem (deixa o build mais rápido e evita levar lixo local para dentro da imagem).
-- O build do `web` usa a raiz do repositório como contexto e não há `.dockerignore` na raiz. Na VPS
-  isso não importa (o clone não tem `node_modules`). Mas, se um dia você rodar
-  `docker compose build` **no Windows**, crie um `.dockerignore` na raiz com
-  `frontend/node_modules`, `frontend/dist`, `frontend/.angular`, `backend/target`.
+- O `.dockerignore` da raiz vale para o build do `web`, que usa a raiz do repositório como contexto.
+  Ele deixa de fora `node_modules`, `dist`, `.env`, backups e as pastas locais do backend. É
+  essencial para rodar `docker compose build` **no Windows**: sem ele, o `node_modules` do Windows
+  iria para dentro do container Linux e quebraria o build.
 
 ---
 

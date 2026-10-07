@@ -1,0 +1,15 @@
+# Contexto do build do "web" (deploy/web.Dockerfile usa a raiz do repositório).
+# Sem isto, ao rodar o Docker no Windows, o node_modules local (com binários do Windows)
+# seria copiado para dentro do container Linux e quebraria o build.
+.git
+.env
+backups
+frontend/node_modules
+frontend/dist
+frontend/.angular
+backend/target
+backend/data
+backend/uploads
+backend/privado
+**/.idea
+**/.vscode
