@@ -77,6 +77,8 @@ git push -u origin main
 
 ## Publicar em produção (VPS)
 
+> Explicação linha a linha da infraestrutura, colinha de SSH/SCP e de Docker: [readme_infra.md](readme_infra.md).
+
 Um plano de hospedagem "Node.js" não serve: o Spring Boot precisa de uma JVM rodando o tempo todo.
 Use uma VPS Linux (Ubuntu 24.04) com **pelo menos 4 GB de RAM** — o build roda no próprio servidor.
 
@@ -146,7 +148,7 @@ O administrador é criado só na primeira vez. Para trocar a senha:
 ```bash
 nano .env                                   # novo ADMIN_PASSWORD
 docker compose exec db psql -U metonimia -d metonimia -c "DELETE FROM admin_usuario;"
-docker compose restart api
+docker compose up -d                        # recria a API com o .env novo ("restart" não relê o .env)
 ```
 
 ---
