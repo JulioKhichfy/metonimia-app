@@ -30,11 +30,15 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
+        <p class="eyebrow">Intérprete de Libras · Acessibilidade comunicacional</p>
         <h1>Comunicação que <span class="accent">inclui</span> todo mundo.</h1>
-        <p class="lead">A Metonímia transforma conteúdo em experiência acessível — para que ninguém fique de fora.</p>
+        <p class="lead">
+          Intérpretes de Libras, tradução simultânea, legendagem e audiodescrição para que pessoas surdas, cegas e com
+          deficiência participem de tudo — sem ficar de fora.
+        </p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#contato">Fale conosco</a>
-          <a class="btn btn-ghost" href="#manifesto">Nosso manifesto</a>
+          <a class="btn btn-primary" href="#contato">Contratar intérprete de Libras</a>
+          <a class="btn btn-ghost" href="#servicos">Ver serviços</a>
         </div>
       </div>
       <div class="hero-art">
@@ -49,6 +53,26 @@
   </section>
 
   <main id="conteudo">
+    <section class="section" id="servicos">
+      <p class="eyebrow">Serviços</p>
+      <h2>Libras e acessibilidade para eventos, vídeos e empresas</h2>
+      <p>
+        A Metonímia conecta o seu público surdo, cego ou com deficiência ao que você tem a dizer. Contrate profissionais de
+        Libras e recursos de acessibilidade para eventos presenciais, online e conteúdos gravados.
+      </p>
+      <div class="grid">
+        @for (s of servicos; track s.id) {
+          <article class="card" [id]="s.id">
+            <h3>{{ s.titulo }}</h3>
+            <p>{{ s.texto }}</p>
+          </article>
+        }
+      </div>
+      <p class="servicos-cta">
+        <a class="btn btn-primary" href="#contato">Solicitar orçamento</a>
+      </p>
+    </section>
+
     <section class="section" id="missao">
       <p class="eyebrow">Missão</p>
       <h2>Por que existimos</h2>
@@ -133,12 +157,25 @@
       <blockquote>“Acessibilidade não é o destino final de uma produção. É o caminho inteiro.”</blockquote>
     </section>
 
+    <section class="section" id="perguntas">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Dúvidas sobre Libras e acessibilidade</h2>
+      <div class="faq">
+        @for (p of perguntas; track p.pergunta) {
+          <details>
+            <summary><h3>{{ p.pergunta }}</h3></summary>
+            <p>{{ p.resposta }}</p>
+          </details>
+        }
+      </div>
+    </section>
+
     <section class="section" id="contato">
       <p class="eyebrow">Fale Conosco</p>
       <h2>Vamos conversar</h2>
       <p>
-        Tem um projeto em mente ou quer saber como tornar o seu conteúdo acessível? Envie uma mensagem — respondemos com
-        prazer.
+        Precisa contratar um intérprete de Libras, legendar um vídeo ou tornar o seu evento acessível? Conte o que você
+        precisa — data, local e duração — e enviamos um orçamento.
       </p>
 
       <div class="contact-grid">
@@ -197,6 +234,14 @@
     <div class="foot-inner">
       <img src="imagens/logo_img.png" alt="Símbolo da Metonímia Produções Acessíveis" width="420" height="280" />
       <p>Metonímia Produções Acessíveis</p>
+      <p class="small">
+        Intérprete de Libras · Tradução simultânea em Libras · Legendagem para surdos · Audiodescrição · Consultoria em
+        acessibilidade
+      </p>
+      <p class="small">
+        WhatsApp <a [href]="whatsappUrl" target="_blank" rel="noopener">{{ contato.whatsappExibicao }}</a> ·
+        <a [href]="'mailto:' + contato.email">{{ contato.email }}</a>
+      </p>
       <p class="small">© {{ ano }} Metonímia. Comunicação acessível para todas as pessoas.</p>
     </div>
   </footer>

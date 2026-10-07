@@ -210,7 +210,10 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./       # primeiro só os manifests (mesmo truque de cache do Maven)
 RUN npm ci                                                     # instala EXATAMENTE as versões do package-lock.json (reprodutível)
 COPY frontend/ ./                                              # copia o código do frontend
-RUN npx ng build --configuration production                    # gera HTML/JS/CSS otimizados em dist/frontend/browser
+RUN npx ng build --configuration production                    # gera HTML/JS/CSS otimizados em dist/frontend/browser.
+                                                               # A home é PRÉ-RENDERIZADA aqui: o index.html já sai com
+                                                               # o texto completo (para Google e IAs). O painel usa index.csr.html.
+                                                               # robots.txt, sitemap.xml e llms.txt vêm de frontend/public/
 
 FROM caddy:2-alpine                                            # imagem oficial do Caddy 2
 COPY deploy/Caddyfile /etc/caddy/Caddyfile                     # coloca nossa configuração onde o Caddy procura por padrão
@@ -244,15 +247,19 @@ O **Caddy** é o servidor web. Ele faz três coisas: obtém e renova o **certifi
 		file_server                      # entrega o arquivo do disco (bem mais eficiente que passar pelo Java)
 	}
 
-	# Site Angular (SPA): rotas como /admin/palestras voltam para o index.html
+	# Site Angular. A home (/) é o index.html pré-renderizado no build (conteúdo legível por
+	# buscadores e IAs). Rotas só do navegador, como /admin/palestras, recebem o index.csr.html.
 	handle {                             # sem caminho = "todo o resto" (o Caddy testa os handles mais específicos antes)
 		root * /srv                      # raiz = site compilado
 		# .js/.css do Angular têm hash no nome: podem ficar em cache por 1 ano
 		@versionados path *.js *.css *.woff2                                   # "@nome" cria um matcher (um filtro)
 		header @versionados Cache-Control "public, max-age=31536000, immutable"   # cache longo só para esses
 		@demais not path *.js *.css *.woff2
-		header @demais Cache-Control "no-cache"                               # index.html sempre revalida → versão nova aparece na hora
-		try_files {path} /index.html     # se o arquivo existe, entrega; senão entrega index.html
+		header @demais Cache-Control "no-cache"                               # HTML sempre revalida → versão nova aparece na hora
+		@painel path /admin /admin/*
+		header @painel X-Robots-Tag "noindex, nofollow"                       # pede ao Google para não indexar o painel
+		try_files {path} /index.csr.html # se o arquivo existe, entrega ("/" é pasta → entrega o index.html pré-renderizado);
+		                                 # senão entrega index.csr.html, a "casca" vazia que o Angular preenche no navegador
 		                                 # (é isso que faz /admin/palestras funcionar ao recarregar a página)
 		file_server
 	}
@@ -894,6 +901,25 @@ docker compose up -d                                             # recria a API 
 3. Restaure banco e uploads (acima) e aponte o DNS para o IP novo.
 
 ---
+
+## 8.1 Buscadores e IAs (depois que o site estiver no ar)
+
+O que já está no código: home pré-renderizada (legível sem JavaScript), título e descrição com as
+palavras-chave, dados estruturados schema.org (organização, serviços, perguntas frequentes),
+`robots.txt`, `sitemap.xml` e `llms.txt` (resumo para assistentes de IA). Textos de serviços e
+perguntas: `frontend/src/app/core/seo.ts`.
+
+O que só você pode fazer:
+
+1. **Google Search Console** (search.google.com/search-console): adicione o domínio, confirme pelo
+   registro TXT no Registro.br e envie `https://xn--metonmia-g2a.com.br/sitemap.xml`.
+2. **Bing Webmaster Tools** (bing.com/webmasters): pode importar do Search Console. O índice do Bing
+   alimenta o ChatGPT (busca) e o Copilot.
+3. **Perfil da Empresa no Google** (business.google.com): é o que aparece no Maps e em "intérprete
+   de Libras perto de mim". Categoria sugerida: "Serviço de intérprete" / "Tradutor".
+4. **Redes sociais e diretórios:** mantenha o mesmo nome, telefone e link do site em Instagram,
+   LinkedIn, YouTube etc. Quando existirem, coloque os links em `sameAs` no `seo.ts`.
+5. **Validar:** search.google.com/test/rich-results e validator.schema.org com o endereço do site.
 
 ## 9. Problemas comuns
 

@@ -1,4 +1,5 @@
-import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
 import { ehFutura, Publicacao, ROTULOS, TipoPublicacao } from '../../core/models';
 import { PublicacaoService } from '../../core/publicacao.service';
 import { PublicacaoCard } from '../../shared/publicacao-card/publicacao-card';
@@ -18,6 +19,7 @@ const PASSADAS_POR_PAGINA = 4;
 export class Agenda implements OnInit {
   private readonly service = inject(PublicacaoService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly plataforma = inject(PLATFORM_ID);
 
   readonly tipo = input.required<TipoPublicacao>();
 
@@ -40,6 +42,8 @@ export class Agenda implements OnInit {
   protected readonly passadasVisiveis = computed(() => this.passadas().slice(0, this.limitePassadas()));
 
   ngOnInit(): void {
+    // No build (pré-renderização) não há API: a agenda é carregada só no navegador
+    if (!isPlatformBrowser(this.plataforma)) return;
     const sub = this.service.listarPublicas(this.tipo()).subscribe({
       next: (lista) => {
         this.itens.set(lista);

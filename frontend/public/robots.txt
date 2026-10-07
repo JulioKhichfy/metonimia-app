@@ -1,0 +1,25 @@
+# Buscadores e assistentes de IA são bem-vindos no site público.
+# O painel administrativo e a API ficam de fora.
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Robôs de IA (busca e respostas): mesmas regras, listados para deixar a permissão explícita
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://xn--metonmia-g2a.com.br/sitemap.xml

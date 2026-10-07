@@ -1,8 +1,12 @@
+import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CONTATO } from '../../core/config';
+import { dadosEstruturados, PERGUNTAS, SERVICOS } from '../../core/seo';
 import { Agenda } from '../agenda/agenda';
+
+const ID_JSON_LD = 'dados-estruturados';
 
 type EstadoEnvio = 'parado' | 'enviando' | 'ok' | 'erro';
 
@@ -22,6 +26,8 @@ export class Home {
   private readonly feedback = viewChild<ElementRef<HTMLElement>>('feedback');
 
   protected readonly contato = CONTATO;
+  protected readonly servicos = SERVICOS;
+  protected readonly perguntas = PERGUNTAS;
   protected readonly whatsappUrl = `https://wa.me/${CONTATO.whatsappNumero}?text=${encodeURIComponent(CONTATO.whatsappMensagem)}`;
   protected readonly ano = new Date().getFullYear();
 
@@ -30,6 +36,7 @@ export class Home {
   protected readonly mensagem = signal('');
 
   protected readonly menu = [
+    { href: '#servicos', texto: 'Serviços' },
     { href: '#missao', texto: 'Missão' },
     { href: '#visao', texto: 'Visão' },
     { href: '#proposito', texto: 'Propósito' },
@@ -42,8 +49,22 @@ export class Home {
     { href: '#palestras', texto: 'Palestras' },
     { href: '#eventos', texto: 'Eventos' },
     { href: '#manifesto', texto: 'Manifesto' },
+    { href: '#perguntas', texto: 'Perguntas frequentes' },
     { href: '#contato', texto: 'Fale Conosco' },
   ];
+
+  constructor() {
+    // Dados estruturados (schema.org) no <head>. Gravados no HTML durante a pré-renderização;
+    // no navegador o script já existe e não é duplicado.
+    const doc = inject(DOCUMENT);
+    if (!doc.getElementById(ID_JSON_LD)) {
+      const script = doc.createElement('script');
+      script.type = 'application/ld+json';
+      script.id = ID_JSON_LD;
+      script.textContent = JSON.stringify(dadosEstruturados()).replace(/</g, '\\u003c');
+      doc.head.appendChild(script);
+    }
+  }
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],

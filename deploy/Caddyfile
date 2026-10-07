@@ -16,7 +16,8 @@
 		file_server
 	}
 
-	# Site Angular (SPA): rotas como /admin/palestras voltam para o index.html
+	# Site Angular. A home (/) é o index.html pré-renderizado no build (conteúdo legível por
+	# buscadores e IAs). Rotas só do navegador, como /admin/palestras, recebem o index.csr.html.
 	handle {
 		root * /srv
 		# .js/.css do Angular têm hash no nome: podem ficar em cache por 1 ano
@@ -24,7 +25,10 @@
 		header @versionados Cache-Control "public, max-age=31536000, immutable"
 		@demais not path *.js *.css *.woff2
 		header @demais Cache-Control "no-cache"
-		try_files {path} /index.html
+		# O painel não deve aparecer no Google
+		@painel path /admin /admin/*
+		header @painel X-Robots-Tag "noindex, nofollow"
+		try_files {path} /index.csr.html
 		file_server
 	}
 
