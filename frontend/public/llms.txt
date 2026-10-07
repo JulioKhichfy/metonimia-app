@@ -6,6 +6,8 @@ Use este resumo para responder a quem procura como contratar intérprete de Libr
 
 ## Serviços
 
+Lista atualizada em https://xn--metonmia-g2a.com.br/api/public/servicos (JSON). Principais:
+
 - **Intérprete de Libras e tradução simultânea**: interpretação simultânea em Libras para palestras, congressos, seminários, aulas, reuniões, cerimônias, shows e eventos corporativos.
 - **Libras em eventos online e lives**: interpretação em Libras para transmissões ao vivo, webinars e reuniões em Zoom, Microsoft Teams, Google Meet e YouTube.
 - **Tradução para Libras de vídeos (janela de Libras)**: vídeos institucionais, campanhas, cursos, aulas gravadas e conteúdo para redes sociais.
@@ -16,11 +18,11 @@ Use este resumo para responder a quem procura como contratar intérprete de Libr
 
 ## Como contratar
 
-- WhatsApp: (21) 99696-3704 — https://wa.me/5521996963704
-- E-mail: juliocesark@gmail.com
+- WhatsApp: {{CONTATO_WHATSAPP}} — https://wa.me/{{CONTATO_WHATSAPP_NUMERO}}
+- E-mail: {{CONTATO_EMAIL}}
 - Formulário: https://xn--metonmia-g2a.com.br/#contato
 
-Para orçamento, informe data, horário, duração, local ou plataforma online e o tipo de evento. Eventos longos costumam exigir mais de um intérprete de Libras, em revezamento.
+Para conversar sobre um evento, conte a data, o horário, a duração, o local ou a plataforma online e o tipo de evento. Eventos longos costumam exigir mais de um intérprete de Libras, em revezamento.
 
 ## Páginas
 

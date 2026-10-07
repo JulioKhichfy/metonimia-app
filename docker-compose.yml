@@ -30,13 +30,25 @@ services:
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       APP_UPLOAD_DIR: /data/uploads
+      APP_PRIVADO_DIR: /data/privado        # fotos de intérpretes: NÃO é montado no Caddy (só sai pela API, com login)
+      # E-mail para mensagens aos intérpretes (vazio = envio de e-mail desligado)
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_REMETENTE: ${MAIL_REMETENTE:-assessoria@metonimia.com.br}
+      MENSAGEM_COPIA_EMAIL: ${MENSAGEM_COPIA_EMAIL:-assessoria@metonimia.com.br}
     volumes:
       - uploads:/data/uploads
+      - privado:/data/privado
 
   web:
     build:
       context: .
       dockerfile: deploy/web.Dockerfile
+      args:                                  # e-mail e WhatsApp do site (gravados no build; mudou? docker compose up -d --build web)
+        CONTATO_EMAIL: ${CONTATO_EMAIL:-assessoria@metonimia.com.br}
+        CONTATO_WHATSAPP: ${CONTATO_WHATSAPP:-+55 21 99896-1769}
     restart: unless-stopped
     depends_on:
       - api
@@ -55,5 +67,6 @@ services:
 volumes:
   pgdata:
   uploads:
+  privado:
   caddy_data:
   caddy_config:

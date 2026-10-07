@@ -1,0 +1,61 @@
+<div class="lista-topo">
+  <h1>Serviços</h1>
+  <button mat-flat-button type="button" (click)="criando.set(true)" [disabled]="criando()">
+    <mat-icon>add</mat-icon> ADICIONAR SERVIÇO
+  </button>
+</div>
+<p class="admin-intro">Aparecem na seção “Serviços” do site, na ordem em que foram cadastrados.</p>
+
+@if (criando()) {
+  <section class="lista-novo">
+    <h2>Novo serviço</h2>
+    <app-servico-form (salvo)="aoCriar($event)" (cancelado)="criando.set(false)" />
+  </section>
+}
+
+@switch (estado()) {
+  @case ('carregando') {
+    <div class="lista-carregando"><mat-spinner diameter="40" /></div>
+  }
+  @case ('erro') {
+    <p class="admin-intro">
+      Não foi possível carregar os serviços.
+      <button mat-button type="button" (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+  @default {
+    <mat-accordion class="lista-acordeao">
+      @for (s of itens(); track s.id) {
+        <mat-expansion-panel (closed)="editandoId() === s.id && editandoId.set(null)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ s.titulo }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+            @if (editandoId() === s.id) {
+              <app-servico-form [servico]="s" (salvo)="aoAtualizar($event)" (cancelado)="editandoId.set(null)" />
+            } @else {
+              <!-- Pré-visualização com o mesmo visual do site -->
+              <div class="site servico-previa">
+                <article class="card">
+                  <h3>{{ s.titulo }}</h3>
+                  <p class="servico-descricao">{{ s.descricao }}</p>
+                </article>
+              </div>
+              <div class="lista-acoes">
+                <button mat-stroked-button type="button" (click)="editandoId.set(s.id)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+                <button mat-stroked-button type="button" class="botao-perigo" (click)="excluir(s)">
+                  <mat-icon>delete</mat-icon> Excluir
+                </button>
+              </div>
+            }
+          </ng-template>
+        </mat-expansion-panel>
+      } @empty {
+        <p class="admin-intro">Nenhum serviço cadastrado. Use “Adicionar serviço” para criar o primeiro.</p>
+      }
+    </mat-accordion>
+  }
+}

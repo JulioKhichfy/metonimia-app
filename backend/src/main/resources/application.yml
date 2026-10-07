@@ -17,6 +17,19 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  # E-mail (mensagens para intérpretes). Sem MAIL_HOST, o envio por e-mail fica desligado.
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MAIL_STARTTLS:true}
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.timeout: 15000
+      mail.smtp.writetimeout: 15000
 
 server:
   port: 8080
@@ -33,3 +46,8 @@ app:
     senha: ${ADMIN_PASSWORD:}
   upload:
     diretorio: ${APP_UPLOAD_DIR:./uploads}
+  privado:
+    diretorio: ${APP_PRIVADO_DIR:./privado}
+  mensagens:
+    remetente: ${MAIL_REMETENTE:assessoria@metonimia.com.br}
+    copia: ${MENSAGEM_COPIA_EMAIL:assessoria@metonimia.com.br}

@@ -130,6 +130,15 @@ else
 # Gerado por preparar-servidor.sh em $(date '+%d/%m/%Y %H:%M'). NÃO suba este arquivo para o GitHub.
 DOMAIN=$DOMAIN
 REDIRECT_DOMAINS="$REDIRECT_DOMAINS"
+CONTATO_EMAIL=assessoria@metonimia.com.br
+CONTATO_WHATSAPP="+55 21 99896-1769"
+# E-mail (SMTP) para mensagens aos intérpretes: preencha quando tiver o e-mail da assessoria
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=assessoria@metonimia.com.br
+MAIL_PASSWORD=
+MAIL_REMETENTE=assessoria@metonimia.com.br
+MENSAGEM_COPIA_EMAIL=assessoria@metonimia.com.br
 DB_USERNAME=$DB_USERNAME
 DB_PASSWORD=$DB_PASSWORD
 APP_JWT_SECRET=$APP_JWT_SECRET

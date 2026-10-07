@@ -14,13 +14,17 @@ Site da **Metonímia Produções Acessíveis** com painel para publicar palestra
   leem a API e se dividem em `#palestras_futuras` / `#palestras_passadas` e
   `#eventos_futuros` / `#eventos_passados`. Ninguém precisa mover nada: a página compara a data/hora
   com o relógio e recalcula a cada minuto.
-- **Fale Conosco**: formulário enviado pelo [FormSubmit](https://formsubmit.co) para
-  `juliocesark@gmail.com` + botão do WhatsApp. Não passa pelo backend. Para trocar o e-mail ou o
-  número, edite `frontend/src/app/core/config.ts`.
-- **Painel** (`/admin`): login → botões PALESTRAS e EVENTOS → lista em accordion (data decrescente)
+- **Vídeo de destaque**: logo abaixo do topo, `frontend/public/videos/depoimento_interpretelibras.mp4`
+  ocupa a largura toda, começa sem som e tem controles para ligar/desligar o som e ajustar o volume.
+- **Serviços**: lidos da API (`/api/public/servicos`) e editados no painel.
+- **Fale Conosco**: formulário enviado pelo [FormSubmit](https://formsubmit.co) para o e-mail de
+  contato + botão do WhatsApp. Não passa pelo backend. E-mail e WhatsApp vêm do `.env`
+  (`CONTATO_EMAIL`, `CONTATO_WHATSAPP`); no desenvolvimento local valem os padrões de
+  `frontend/src/app/core/config.ts`.
+- **Painel** (`/admin`): login → botões PALESTRAS, EVENTOS, SERVIÇOS, INTÉRPRETES e BACKUP → lista em accordion
   com Editar/Excluir → "ADICIONAR PALESTRA" com data, hora, local, descrição (editor com fonte,
-  tamanho, cor, negrito, itálico e cor de fundo), fotos (com texto alternativo) e vídeos (arquivo ou
-  link do YouTube/Vimeo).
+  tamanho, cor, negrito, itálico e cor de fundo), fotos (com texto alternativo), vídeos (arquivo ou
+  link do YouTube/Vimeo) e redes sociais. Serviços têm só título e descrição.
 
 ### API
 
@@ -32,6 +36,21 @@ Site da **Metonímia Produções Acessíveis** com painel para publicar palestra
 | GET/PUT/DELETE | `/api/admin/publicacoes/{id}` | JWT  |
 | POST   | `/api/admin/publicacoes`           | JWT     |
 | POST   | `/api/admin/uploads` (multipart `arquivo`) | JWT |
+| GET    | `/api/public/servicos`             | aberto  |
+| GET/POST | `/api/admin/servicos`            | JWT     |
+| PUT/DELETE | `/api/admin/servicos/{id}`     | JWT     |
+| GET    | `/api/admin/backup` (baixa um `.sql`) | JWT  |
+| GET    | `/api/admin/interpretes`           | JWT     |
+| POST / PUT | `/api/admin/interpretes[/{id}]` (multipart: `dados` JSON + `foto` opcional) | JWT |
+| DELETE | `/api/admin/interpretes/{id}`      | JWT     |
+| GET    | `/api/admin/interpretes/{id}/foto` (foto privada) | JWT |
+| POST   | `/api/admin/interpretes/mensagens` | JWT     |
+
+**Intérpretes** são cadastro interno (dados pessoais, LGPD): nada aparece no site. As fotos ficam numa
+pasta privada (`APP_PRIVADO_DIR`), fora de `/uploads`, e só saem pela API com login. Mensagens:
+e-mail é enviado pelo servidor (SMTP configurado no `.env`: `MAIL_HOST` etc.); WhatsApp gera um link
+por intérprete com o texto pronto (envio automático exigiria a API oficial da Meta). Uma cópia de
+cada mensagem vai para `MENSAGEM_COPIA_EMAIL`.
 
 O HTML da descrição é limpo no servidor (jsoup) antes de ser gravado. Uploads são conferidos pelo
 conteúdo do arquivo (não só pela extensão): JPG/PNG/WEBP/GIF até 10 MB, MP4/WEBM até 200 MB.
@@ -155,7 +174,10 @@ docker compose up -d                        # recria a API com o .env novo ("res
 
 ## FormSubmit
 
-No primeiro envio real do formulário, o FormSubmit manda um e-mail de ativação para
-`juliocesark@gmail.com`. Clique no link uma vez. Depois disso, o FormSubmit oferece um endereço
-aleatório para usar no lugar do e-mail (assim ele não fica visível no código do site) — basta
-trocar em `frontend/src/app/core/config.ts`.
+No primeiro envio real do formulário, o FormSubmit manda um e-mail de ativação para o endereço de
+`CONTATO_EMAIL` (padrão `assessoria@metonimia.com.br`). Clique no link uma vez. **Trocou o e-mail?
+A ativação precisa ser feita de novo**, senão as mensagens do formulário não chegam.
+
+Depois de ativado, o FormSubmit oferece um endereço aleatório para usar no lugar do e-mail (assim
+ele não fica visível no código do site). Esse endereço só serve para o formulário; como o mesmo
+`CONTATO_EMAIL` também aparece no site, mantenha o e-mail real ali.

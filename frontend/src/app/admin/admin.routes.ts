@@ -52,6 +52,16 @@ export const ADMIN_ROUTES: Routes = [
             data: { tipo: 'EVENTO' },
             loadComponent: () => import('./publicacao-lista/publicacao-lista').then((m) => m.PublicacaoLista),
           },
+          {
+            path: 'servicos',
+            title: 'Serviços | Painel Metonímia',
+            loadComponent: () => import('./servico-lista/servico-lista').then((m) => m.ServicoLista),
+          },
+          {
+            path: 'interpretes',
+            title: 'Intérpretes | Painel Metonímia',
+            loadComponent: () => import('./interprete-lista/interprete-lista').then((m) => m.InterpreteLista),
+          },
         ],
       },
     ],

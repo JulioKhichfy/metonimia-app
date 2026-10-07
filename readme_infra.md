@@ -132,14 +132,25 @@ services:                                   # lista de containers que o Compose 
       ADMIN_USERNAME: ${ADMIN_USERNAME}     # admin criado na 1ª inicialização (AdminSeeder)
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       APP_UPLOAD_DIR: /data/uploads         # pasta, dentro do container, onde a API grava fotos/vídeos
+      APP_PRIVADO_DIR: /data/privado        # fotos de intérpretes (dados pessoais): NÃO é montada no Caddy
+      MAIL_HOST: ${MAIL_HOST:-}             # servidor SMTP; vazio = envio de e-mail desligado
+      MAIL_PORT: ${MAIL_PORT:-587}          # 587 = SMTP com STARTTLS (padrão da maioria dos provedores)
+      MAIL_USERNAME: ${MAIL_USERNAME:-}     # login do e-mail
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}     # senha (no Gmail/Workspace: "senha de app")
+      MAIL_REMETENTE: ${MAIL_REMETENTE:-assessoria@metonimia.com.br}         # quem aparece como remetente
+      MENSAGEM_COPIA_EMAIL: ${MENSAGEM_COPIA_EMAIL:-assessoria@metonimia.com.br}   # recebe cópia de toda mensagem
     volumes:
       - uploads:/data/uploads               # essa pasta é o volume "uploads" → arquivos persistem
+      - privado:/data/privado               # volume "privado": só a API enxerga (o Caddy não)
                                             # (repare: SEM "ports:" → a porta 8080 não é exposta para fora)
 
   web:                                      # serviço 3: Caddy (site + HTTPS + proxy)
     build:
       context: .                            # contexto = raiz do repositório (precisa ver frontend/ e deploy/)
       dockerfile: deploy/web.Dockerfile     # receita fica em deploy/
+      args:                                 # "argumentos de build": valores passados para o Dockerfile (ARG)
+        CONTATO_EMAIL: ${CONTATO_EMAIL:-assessoria@metonimia.com.br}   # ${VAR:-padrão} = do .env, ou o padrão se faltar
+        CONTATO_WHATSAPP: ${CONTATO_WHATSAPP:-+55 21 99896-1769}       # gravados no site NO BUILD → mudou? rebuild do web
     restart: unless-stopped
     depends_on:
       - api                                 # sobe depois da API (só ordem de início, não espera ela ficar pronta)
@@ -158,6 +169,7 @@ services:                                   # lista de containers que o Compose 
 volumes:                                    # declara os volumes nomeados. O Docker cria na 1ª vez.
   pgdata:                                   # nome real no disco: metonimia-app_pgdata (prefixo = nome da pasta do projeto)
   uploads:                                  # metonimia-app_uploads
+  privado:                                  # metonimia-app_privado (fotos de intérpretes)
   caddy_data:
   caddy_config:
 ```
@@ -210,7 +222,12 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./       # primeiro só os manifests (mesmo truque de cache do Maven)
 RUN npm ci                                                     # instala EXATAMENTE as versões do package-lock.json (reprodutível)
 COPY frontend/ ./                                              # copia o código do frontend
-RUN npx ng build --configuration production                    # gera HTML/JS/CSS otimizados em dist/frontend/browser.
+ARG CONTATO_EMAIL=assessoria@metonimia.com.br                  # ARG = variável que só existe durante o build;
+ARG CONTATO_WHATSAPP="+55 21 99896-1769"                       # o valor vem do "args:" do compose (que lê o .env)
+RUN npx ng build --configuration production \                  # gera HTML/JS/CSS otimizados em dist/frontend/browser.
+      --define "CONTATO_EMAIL_DEFINIDO=$(node -p '...')" \      # --define troca CONTATO_EMAIL_DEFINIDO no código pelo valor
+      --define "CONTATO_WHATSAPP_DEFINIDO=$(node -p '...')" \   # (o node -p JSON.stringify põe as aspas certinhas)
+ && node -e "...replaceAll('{{CONTATO_EMAIL}}', ...)..."       # preenche os marcadores {{...}} do llms.txt
                                                                # A home é PRÉ-RENDERIZADA aqui: o index.html já sai com
                                                                # o texto completo (para Google e IAs). O painel usa index.csr.html.
                                                                # robots.txt, sitemap.xml e llms.txt vêm de frontend/public/
@@ -286,6 +303,14 @@ lê esse arquivo **automaticamente** e substitui os `${...}` do `docker-compose.
 ```bash
 DOMAIN=xn--metonmia-g2a.com.br            # domínio principal em punycode (metonímia.com.br)
 REDIRECT_DOMAINS=www.xn--metonmia-g2a.com.br   # domínios que só redirecionam para o principal
+CONTATO_EMAIL=assessoria@metonimia.com.br # e-mail exibido no site e destino do formulário (FormSubmit)
+CONTATO_WHATSAPP="+55 21 99896-1769"      # WhatsApp do site; aspas por causa dos espaços
+MAIL_HOST=                                # SMTP para mensagens aos intérpretes (vazio = desligado)
+MAIL_PORT=587                             #   ex.: Google Workspace smtp.gmail.com · Zoho smtp.zoho.com
+MAIL_USERNAME=assessoria@metonimia.com.br
+MAIL_PASSWORD=                            #   no Gmail/Workspace use uma "senha de app"
+MAIL_REMETENTE=assessoria@metonimia.com.br
+MENSAGEM_COPIA_EMAIL=assessoria@metonimia.com.br   # recebe cópia de toda mensagem enviada
 DB_USERNAME=metonimia                     # usuário do Postgres
 DB_PASSWORD=...                           # senha do Postgres (gerada aleatória pelo script)
 APP_JWT_SECRET=...                        # chave dos tokens de login (≥ 32 caracteres). Trocar = desloga todo mundo.
@@ -294,6 +319,9 @@ ADMIN_PASSWORD='...'                      # senha do painel (só vale na 1ª cri
 ```
 
 > Mudou o `.env`? Rode `docker compose up -d`: o Compose percebe e recria só os containers afetados.
+> **Exceção:** `CONTATO_EMAIL` e `CONTATO_WHATSAPP` são gravados no site durante o build. Para eles,
+> rode `docker compose up -d --build web` (ou `./deploy/atualizar.sh`).
+> Trocou o e-mail? Refaça a ativação do FormSubmit (ver `README.md`).
 > **Atenção:** `DB_PASSWORD` só é aplicada pelo Postgres na **primeira** inicialização (quando o
 > volume está vazio). Trocar depois exige alterar a senha dentro do banco também.
 
@@ -498,6 +526,7 @@ docker compose ps               # mostra se tudo ficou "Up"
 set -e
 cd "$(dirname "$0")/.."
 mkdir -p backups                # cria a pasta (sem erro se já existir: -p)
+chmod 700 backups               # só o root entra na pasta: os backups têm dados pessoais dos intérpretes
 DATA=$(date +%Y-%m-%d)          # ex.: 2026-10-07
 docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" metonimia' | gzip > "backups/banco-$DATA.sql.gz"
                                 # exec = roda um comando DENTRO do container db já em execução
@@ -509,6 +538,8 @@ docker run --rm -v metonimia-app_uploads:/u:ro -v "$PWD/backups":/b alpine tar c
                                 #   o volume de uploads montado em /u (só leitura)
                                 #   a pasta backups/ da VPS montada em /b
                                 # e compacta (tar czf) todo o conteúdo de /u para /b/uploads-DATA.tar.gz
+docker run --rm -v metonimia-app_privado:/p:ro -v "$PWD/backups":/b alpine sh -c "tar czf ... && chmod 600 ..."
+                                # mesma coisa para as fotos dos intérpretes; chmod 600 = só o root lê o arquivo
 find backups -type f -mtime +14 -delete   # apaga backups com mais de 14 dias
 echo "Backup salvo em backups/ ($DATA)"
 ```
@@ -868,6 +899,9 @@ docker compose start api
 
 ```bash
 docker run --rm -v metonimia-app_uploads:/u -v "$PWD/backups":/b alpine tar xzf /b/uploads-2026-10-07.tar.gz -C /u
+# fotos dos intérpretes (o usuário "app" do container precisa ser o dono dos arquivos)
+docker run --rm -v metonimia-app_privado:/p -v "$PWD/backups":/b alpine sh -c "tar xzf /b/privado-2026-10-07.tar.gz -C /p && chown -R 100:101 /p"
+docker compose exec api id app      # confira se uid/gid do usuário "app" são 100/101; se não, ajuste o chown acima
 ```
 
 ### Restaurar o `.sql` baixado pelo botão BACKUP do painel
@@ -906,8 +940,10 @@ docker compose up -d                                             # recria a API 
 
 O que já está no código: home pré-renderizada (legível sem JavaScript), título e descrição com as
 palavras-chave, dados estruturados schema.org (organização, serviços, perguntas frequentes),
-`robots.txt`, `sitemap.xml` e `llms.txt` (resumo para assistentes de IA). Textos de serviços e
-perguntas: `frontend/src/app/core/seo.ts`.
+`robots.txt`, `sitemap.xml` e `llms.txt` (resumo para assistentes de IA). Perguntas frequentes:
+`frontend/src/app/core/seo.ts`. Serviços: editados no painel (`/admin/servicos`). O HTML
+pré-renderizado (o que robôs sem JavaScript leem) usa o retrato `SERVICOS_PADRAO` do `seo.ts`,
+porque não há API durante o build. Se os serviços mudarem muito, atualize esse retrato.
 
 O que só você pode fazer:
 

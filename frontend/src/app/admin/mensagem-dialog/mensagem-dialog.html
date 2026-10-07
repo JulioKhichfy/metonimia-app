@@ -1,0 +1,103 @@
+<h2 mat-dialog-title>{{ titulo }}</h2>
+
+@if (resultado(); as r) {
+  <!-- Etapa 2: resultado -->
+  <mat-dialog-content class="msg">
+    @for (aviso of r.avisos; track aviso) {
+      <p class="pf-aviso" role="status"><mat-icon aria-hidden="true">warning</mat-icon><span>{{ aviso }}</span></p>
+    }
+
+    @if (r.emailsEnviados.length) {
+      <p class="msg-ok"><mat-icon aria-hidden="true">mark_email_read</mat-icon> E-mail enviado para {{ r.emailsEnviados.join(', ') }}.</p>
+    }
+    @if (r.emailsComFalha.length) {
+      <p class="pf-erro">E-mail não enviado para {{ r.emailsComFalha.join(', ') }}.</p>
+    }
+    @if (r.semEmail.length) {
+      <p class="pf-dica">Sem e-mail cadastrado: {{ r.semEmail.join(', ') }}.</p>
+    }
+    @if (r.copiaEnviadaPara) {
+      <p class="pf-dica">Cópia enviada para {{ r.copiaEnviadaPara }}.</p>
+    }
+
+    @if (r.whatsapp.length) {
+      <h3 class="msg-subtitulo">WhatsApp</h3>
+      <p class="pf-dica">
+        Toque em cada botão: o WhatsApp abre com a mensagem já escrita, é só enviar.
+      </p>
+      <ul class="msg-whatsapp">
+        @for (w of r.whatsapp; track w.interpreteId) {
+          <li>
+            <span>{{ w.nome }}</span>
+            <a
+              mat-stroked-button
+              [href]="w.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="marcarAberto(w.interpreteId)"
+              [class.msg-aberto]="abertos().has(w.interpreteId)"
+            >
+              <mat-icon>{{ abertos().has(w.interpreteId) ? 'check' : 'chat' }}</mat-icon>
+              {{ abertos().has(w.interpreteId) ? 'Aberto' : 'Abrir WhatsApp' }}
+            </a>
+          </li>
+        }
+      </ul>
+    }
+    @if (r.semWhatsapp.length) {
+      <p class="pf-dica">Celular não marcado como WhatsApp: {{ r.semWhatsapp.join(', ') }}.</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-flat-button type="button" (click)="fechar()">Concluir</button>
+  </mat-dialog-actions>
+} @else {
+  <!-- Etapa 1: escrever -->
+  <mat-dialog-content class="msg">
+    <fieldset class="msg-canais">
+      <legend>Enviar por</legend>
+      <mat-checkbox [formControl]="porEmail">E-mail ({{ comEmail }} com e-mail)</mat-checkbox>
+      <mat-checkbox [formControl]="porWhatsapp">WhatsApp ({{ comWhatsapp }} com WhatsApp)</mat-checkbox>
+    </fieldset>
+
+    @if (mostrarAssunto() && emailConfigurado() === false) {
+      <p class="pf-aviso" role="status">
+        <mat-icon aria-hidden="true">warning</mat-icon>
+        <span>
+          O envio de e-mail ainda não está configurado no servidor (MAIL_HOST no .env). Os e-mails e a cópia para a
+          assessoria não serão enviados; o WhatsApp funciona normalmente.
+        </span>
+      </p>
+    }
+
+    @if (mostrarAssunto()) {
+      <mat-form-field appearance="outline" class="pf-largo">
+        <mat-label>Assunto do e-mail (opcional)</mat-label>
+        <input matInput [formControl]="assunto" maxlength="150" placeholder="Mensagem da Metonímia" />
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline" class="pf-largo">
+      <mat-label>Mensagem</mat-label>
+      <textarea matInput [formControl]="texto" rows="7" [maxlength]="limiteTexto" cdkFocusInitial></textarea>
+      <mat-hint>Cada pessoa recebe “Olá, [primeiro nome]!” antes do texto.</mat-hint>
+      <mat-hint align="end">{{ texto.value.length }}/{{ limiteTexto }}</mat-hint>
+      <mat-error>Escreva a mensagem.</mat-error>
+    </mat-form-field>
+
+    <p class="pf-dica">Uma cópia da mensagem vai para o e-mail da assessoria.</p>
+
+    @if (enviando()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    @if (erro()) {
+      <p class="pf-erro" role="alert">{{ erro() }}</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="fechar()" [disabled]="enviando()">Cancelar</button>
+    <button mat-flat-button type="button" (click)="enviar()" [disabled]="enviando() || !algumCanal()">
+      <mat-icon>send</mat-icon> {{ enviando() ? 'Enviando…' : 'Enviar' }}
+    </button>
+  </mat-dialog-actions>
+}

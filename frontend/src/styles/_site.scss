@@ -104,6 +104,43 @@
   .card p { font-size: 1.12rem; margin: 0; }
 
   .servicos-cta { margin: 24px 0 0; }
+  .servico-descricao { white-space: pre-line; } /* texto simples do painel: respeita as quebras de linha */
+
+  /* ---------- Vídeo de destaque ---------- */
+  /* Fundo lavanda continua o degradê do topo; o vídeo fica na mesma largura do conteúdo do site */
+  .video-destaque { background: var(--mist); padding: clamp(20px, 4vw, 40px) 18px clamp(40px, 6vw, 54px); }
+  .video-moldura {
+    position: relative; max-width: 880px; margin: 0 auto;
+    border-radius: var(--radius); overflow: hidden; background: #111;
+    box-shadow: 0 18px 40px rgba(160, 19, 173, .18);
+  }
+  .video-destaque video {
+    display: block; width: 100%; height: auto; aspect-ratio: 16 / 9;
+    max-height: 75svh;       /* nunca maior que 3/4 da tela */
+    object-fit: contain;     /* nunca corta: em Libras, mãos e rosto precisam aparecer inteiros */
+    background: #111; cursor: pointer;
+  }
+  /* Controles no topo: embaixo cobririam a legenda do vídeo */
+  .video-controles {
+    position: absolute; left: 14px; top: 14px; max-width: calc(100% - 28px);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    padding: 5px; border-radius: 999px; background: rgba(17, 17, 17, .75); color: #fff; line-height: 1.2;
+  }
+  .video-botao {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-width: 44px; height: 44px; padding: 0 12px; border: 0; border-radius: 999px;
+    background: transparent; color: #fff; font: inherit; font-size: .95rem; font-weight: 700; cursor: pointer;
+    &:hover:not(:disabled) { background: rgba(255, 255, 255, .16); }
+    &:focus-visible { outline: 3px solid #fff; outline-offset: 1px; }
+    &:disabled { opacity: .4; cursor: default; }
+  }
+  .video-botao-som { background: var(--magenta); &:hover:not(:disabled) { background: var(--magenta-deep); } }
+  .video-volume { min-width: 6.5em; text-align: center; font-size: .85rem; }
+  /* Celular: controles numa faixa acima do vídeo, sem cobrir a intérprete nem a legenda */
+  @media (max-width: 600px) {
+    .video-moldura { display: flex; flex-direction: column; }
+    .video-controles { position: static; order: -1; max-width: none; justify-content: center; border-radius: 0; background: #111; }
+  }
 
   /* ---------- Perguntas frequentes ---------- */
   .faq { display: flex; flex-direction: column; gap: 10px; max-width: 80ch; }

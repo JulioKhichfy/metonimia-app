@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,6 +136,38 @@ class PublicacaoApiTest {
         if (!sql.contains("INSERT INTO publicacao") || !sql.contains("'Sala d''Água'") || !sql.contains("COMMIT;")) {
             throw new AssertionError("Backup inesperado:\n" + sql);
         }
+    }
+
+    @Test
+    void servicos() throws Exception {
+        // a migração V3 já cadastra os serviços iniciais
+        mvc.perform(get("/api/public/servicos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].titulo").value("Intérprete de Libras e tradução simultânea"));
+
+        String corpo = "{\"titulo\":\"  Teste  \",\"descricao\":\"Descrição\"}";
+        mvc.perform(post("/api/admin/servicos").contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isUnauthorized());
+
+        String token = login();
+        String criado = mvc.perform(post("/api/admin/servicos").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.titulo").value("Teste"))
+                .andReturn().getResponse().getContentAsString();
+        String id = extrair(criado, "\"id\"\\s*:\\s*(\\d+)");
+
+        mvc.perform(put("/api/admin/servicos/" + id).header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"Novo\",\"descricao\":\"Outra\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Novo"));
+
+        mvc.perform(post("/api/admin/servicos").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"\",\"descricao\":\"x\"}"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(delete("/api/admin/servicos/" + id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
     }
 
     private String login() throws Exception {

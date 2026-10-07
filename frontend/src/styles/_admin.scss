@@ -78,6 +78,44 @@
   .lista-acordeao .mat-expansion-panel-header { height: auto; padding-block: 10px; }
   .lista-acordeao .mat-content { flex-direction: column; gap: 4px; }
 }
+.servico-previa { font-size: 16px; line-height: 1.6; }
+
+/* Intérpretes */
+.lista-topo-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+.foto-interprete {
+  --tamanho: 48px;
+  display: inline-grid; place-items: center; flex: 0 0 auto;
+  width: var(--tamanho); height: var(--tamanho); border-radius: 50%; overflow: hidden;
+  background: var(--mist); color: var(--magenta-deep);
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+.foto-iniciais { font-family: var(--font-display); font-weight: 700; font-size: calc(var(--tamanho) * .38); }
+.int-cabecalho .mat-expansion-panel-header-title { align-items: center; gap: 12px; }
+.if-foto { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.if-foto-acoes { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+img.if-previa, .if-previa { --tamanho: 96px; object-fit: cover; }
+.if-vazia mat-icon { font-size: 48px; width: 48px; height: 48px; }
+.int-ficha {
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;
+  dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; min-width: 0; flex: 1 1 260px; }
+  dt { font-weight: 700; color: var(--mat-sys-on-surface-variant); }
+  dd { margin: 0; overflow-wrap: anywhere; }
+}
+
+/* Popup de mensagem */
+.msg { display: flex; flex-direction: column; gap: 12px; }
+.msg-canais {
+  border: 1px solid var(--line); border-radius: 12px; margin: 0; padding: 8px 12px;
+  display: flex; flex-wrap: wrap; gap: 4px 16px;
+  legend { font-weight: 700; padding: 0 6px; }
+}
+.msg-ok { display: flex; align-items: center; gap: 8px; margin: 0; color: #0a6b2e; font-weight: 600; }
+.msg-subtitulo { font-size: 1.05rem; margin: 8px 0 0; }
+.msg-whatsapp {
+  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
+  li { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+}
+.msg-aberto { color: #0a6b2e !important; }
 .lista-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
 .botao-perigo { color: var(--mat-sys-error) !important; }
 

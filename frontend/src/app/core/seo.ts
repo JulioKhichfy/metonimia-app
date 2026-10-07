@@ -1,9 +1,10 @@
 import { CONTATO } from './config';
+import { Servico } from './models';
 
 /**
  * Conteúdo para buscadores (Google) e assistentes de IA (ChatGPT, Gemini, Claude, Perplexity).
  * Os mesmos textos aparecem na página E nos dados estruturados (JSON-LD): o Google exige que
- * os dois coincidam, então edite só aqui.
+ * os dois coincidam.
  *
  * Endereço oficial do site. Se o domínio mudar, troque também em: src/index.html,
  * public/robots.txt, public/sitemap.xml e public/llms.txt.
@@ -11,64 +12,69 @@ import { CONTATO } from './config';
 export const SITE_URL = 'https://xn--metonmia-g2a.com.br';
 export const SITE_NOME = 'Metonímia Produções Acessíveis';
 
-export interface Servico {
-  id: string;
-  titulo: string;
-  texto: string;
-}
-
-export const SERVICOS: Servico[] = [
+/**
+ * Os serviços são editados pelo painel (/admin/servicos) e lidos da API no navegador.
+ * Esta lista é só o retrato inicial — igual ao cadastrado pela migração V3__servicos.sql — usado
+ * no HTML pré-renderizado do build, que os robôs sem JavaScript leem (não há API durante o build).
+ * Se os serviços mudarem muito no painel, vale atualizar esta lista para os robôs verem o mesmo.
+ */
+export const SERVICOS_PADRAO: Servico[] = [
   {
-    id: 'interprete-de-libras',
+    id: 1,
     titulo: 'Intérprete de Libras e tradução simultânea',
-    texto:
+    descricao:
       'Profissionais de Libras (Língua Brasileira de Sinais) fazem a interpretação simultânea de palestras, congressos, ' +
       'seminários, aulas, reuniões, cerimônias, shows e eventos corporativos. A pessoa surda acompanha tudo em tempo real, ' +
       'junto com o restante do público.',
   },
   {
-    id: 'libras-online',
+    id: 2,
     titulo: 'Libras em eventos online e lives',
-    texto:
+    descricao:
       'Interpretação em Libras para transmissões ao vivo, webinars e reuniões em Zoom, Microsoft Teams, Google Meet e ' +
       'YouTube, com a janela do intérprete visível durante toda a transmissão.',
   },
   {
-    id: 'janela-de-libras',
+    id: 3,
     titulo: 'Tradução para Libras de vídeos (janela de Libras)',
-    texto:
+    descricao:
       'Tradução de vídeos institucionais, campanhas, cursos, aulas gravadas e conteúdo para redes sociais, com janela de ' +
       'Libras posicionada e dimensionada para leitura confortável.',
   },
   {
-    id: 'legendagem',
+    id: 4,
     titulo: 'Legendagem para surdos e ensurdecidos (LSE)',
-    texto:
+    descricao:
       'Legendas que trazem, além das falas, a identificação de quem fala, efeitos sonoros e música — o que a pessoa surda ' +
       'ou com deficiência auditiva precisa para entender o vídeo por completo.',
   },
   {
-    id: 'audiodescricao',
+    id: 5,
     titulo: 'Audiodescrição',
-    texto:
+    descricao:
       'Narração das informações visuais de vídeos, espetáculos, exposições e eventos para pessoas cegas ou com baixa ' +
       'visão.',
   },
   {
-    id: 'consultoria',
+    id: 6,
     titulo: 'Consultoria em acessibilidade comunicacional',
-    texto:
+    descricao:
       'Planejamos com você a acessibilidade de eventos, projetos culturais e conteúdos digitais desde o início, de acordo ' +
       'com a Lei Brasileira de Inclusão — incluindo os recursos exigidos em editais e leis de incentivo à cultura.',
   },
   {
-    id: 'palestras-inclusao',
+    id: 7,
     titulo: 'Palestras e formações sobre inclusão',
-    texto:
+    descricao:
       'Conversas e capacitações para empresas, escolas e equipes sobre acessibilidade, cultura surda, Libras e como ' +
       'comunicar sem deixar ninguém de fora.',
   },
 ];
+
+/** Âncora de cada serviço na página (#servico-1). */
+export function ancoraServico(s: Pick<Servico, 'id'>): string {
+  return `servico-${s.id}`;
+}
 
 export interface Pergunta {
   pergunta: string;
@@ -79,9 +85,9 @@ export const PERGUNTAS: Pergunta[] = [
   {
     pergunta: 'Como contratar um intérprete de Libras para o meu evento?',
     resposta:
-      'Fale com a Metonímia pelo WhatsApp ' + CONTATO.whatsappExibicao + ' ou pelo formulário deste site. Informe a data, ' +
-      'o horário, a duração, o local (ou a plataforma, se for online) e o tipo de evento. Com isso enviamos um orçamento ' +
-      'com o número de profissionais de Libras necessários.',
+      'Entre em contato com a gente pelo WhatsApp ' + CONTATO.whatsappExibicao + ' ou pelo formulário deste site. Conte a ' +
+      'data, o horário, a duração, o local (ou a plataforma, se for online) e o tipo de evento, e a gente conversa sobre ' +
+      'o número de profissionais de Libras necessários.',
   },
   {
     pergunta: 'Qual a diferença entre tradução e interpretação em Libras?',
@@ -123,7 +129,7 @@ export const PERGUNTAS: Pergunta[] = [
 ];
 
 /** Dados estruturados (schema.org) da home: organização, serviços e perguntas frequentes. */
-export function dadosEstruturados(): object {
+export function dadosEstruturados(servicos: Servico[]): object {
   const organizacao = `${SITE_URL}/#organizacao`;
   return {
     '@context': 'https://schema.org',
@@ -156,7 +162,7 @@ export function dadosEstruturados(): object {
         ],
         contactPoint: {
           '@type': 'ContactPoint',
-          contactType: 'Orçamentos e contratação',
+          contactType: 'Contato e contratação',
           telephone: '+' + CONTATO.whatsappNumero,
           email: CONTATO.email,
           availableLanguage: ['Portuguese', 'Brazilian Sign Language'],
@@ -164,13 +170,13 @@ export function dadosEstruturados(): object {
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
           name: 'Serviços de acessibilidade',
-          itemListElement: SERVICOS.map((s) => ({
+          itemListElement: servicos.map((s) => ({
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              '@id': `${SITE_URL}/#${s.id}`,
+              '@id': `${SITE_URL}/#${ancoraServico(s)}`,
               name: s.titulo,
-              description: s.texto,
+              description: s.descricao,
               provider: { '@id': organizacao },
               areaServed: { '@type': 'Country', name: 'Brasil' },
             },

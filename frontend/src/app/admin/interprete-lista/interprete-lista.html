@@ -1,0 +1,90 @@
+<div class="lista-topo">
+  <h1>Intérpretes</h1>
+  <div class="lista-topo-botoes">
+    <button mat-stroked-button type="button" (click)="mensagemParaTodos()" [disabled]="!itens().length">
+      <mat-icon>forum</mat-icon> MENSAGEM PARA TODOS
+    </button>
+    <button mat-flat-button type="button" (click)="criando.set(true)" [disabled]="criando()">
+      <mat-icon>person_add</mat-icon> ADICIONAR INTÉRPRETE
+    </button>
+  </div>
+</div>
+<p class="admin-intro">Cadastro interno: nada daqui aparece no site.</p>
+
+@if (criando()) {
+  <section class="lista-novo">
+    <h2>Novo intérprete</h2>
+    <app-interprete-form (salvo)="aoCriar($event)" (cancelado)="criando.set(false)" />
+  </section>
+}
+
+@switch (estado()) {
+  @case ('carregando') {
+    <div class="lista-carregando"><mat-spinner diameter="40" /></div>
+  }
+  @case ('erro') {
+    <p class="admin-intro">
+      Não foi possível carregar os intérpretes.
+      <button mat-button type="button" (click)="carregar()">Tentar de novo</button>
+    </p>
+  }
+  @default {
+    <mat-accordion class="lista-acordeao">
+      @for (i of itens(); track i.id) {
+        <mat-expansion-panel (closed)="editandoId() === i.id && editandoId.set(null)">
+          <mat-expansion-panel-header class="int-cabecalho">
+            <mat-panel-title>
+              <app-foto-interprete [interprete]="i" [tamanho]="36" />
+              <span>{{ i.nome }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="lista-local">{{ formatarCelular(i.celular) }}</span>
+              @if (i.celularWhatsapp) {
+                <span class="selo selo-futura">WhatsApp</span>
+              }
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+            @if (editandoId() === i.id) {
+              <app-interprete-form [interprete]="i" (salvo)="aoAtualizar($event)" (cancelado)="editandoId.set(null)" />
+            } @else {
+              <div class="int-ficha">
+                <app-foto-interprete [interprete]="i" [tamanho]="112" />
+                <dl>
+                  <dt>Nascimento</dt>
+                  <dd>{{ dataBr(i.dataNascimento) }} ({{ idade(i) }} anos)</dd>
+                  <dt>Endereço</dt>
+                  <dd>{{ i.endereco }}</dd>
+                  <dt>Celular</dt>
+                  <dd>{{ formatarCelular(i.celular) }}{{ i.celularWhatsapp ? ' · WhatsApp' : '' }}</dd>
+                  <dt>E-mail</dt>
+                  <dd>
+                    @if (i.email) {
+                      <a [href]="'mailto:' + i.email">{{ i.email }}</a>
+                    } @else {
+                      <span class="pf-dica">não informado</span>
+                    }
+                  </dd>
+                </dl>
+              </div>
+              <div class="lista-acoes">
+                <button mat-stroked-button type="button" (click)="mensagemPara(i)" [disabled]="!i.email && !i.celularWhatsapp">
+                  <mat-icon>send</mat-icon> Enviar mensagem
+                </button>
+                <button mat-stroked-button type="button" (click)="editandoId.set(i.id)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+                <button mat-stroked-button type="button" class="botao-perigo" (click)="excluir(i)">
+                  <mat-icon>delete</mat-icon> Excluir
+                </button>
+              </div>
+            }
+          </ng-template>
+        </mat-expansion-panel>
+      } @empty {
+        <p class="admin-intro">Nenhum intérprete cadastrado. Use “Adicionar intérprete” para cadastrar o primeiro.</p>
+      }
+    </mat-accordion>
+  }
+}

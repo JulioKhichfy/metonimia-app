@@ -32,12 +32,9 @@
       <div>
         <p class="eyebrow">Intérprete de Libras · Acessibilidade comunicacional</p>
         <h1>Comunicação que <span class="accent">inclui</span> todo mundo.</h1>
-        <p class="lead">
-          Intérpretes de Libras, tradução simultânea, legendagem e audiodescrição para que pessoas surdas, cegas e com
-          deficiência participem de tudo — sem ficar de fora.
-        </p>
+        <p class="lead">A Metonímia transforma conteúdo em experiência acessível — para que ninguém fique de fora.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#contato">Contratar intérprete de Libras</a>
+          <a class="btn btn-primary" href="#contato">Entre em contato com a gente</a>
           <a class="btn btn-ghost" href="#servicos">Ver serviços</a>
         </div>
       </div>
@@ -52,6 +49,8 @@
     </div>
   </section>
 
+  <app-video-destaque />
+
   <main id="conteudo">
     <section class="section" id="servicos">
       <p class="eyebrow">Serviços</p>
@@ -60,16 +59,18 @@
         A Metonímia conecta o seu público surdo, cego ou com deficiência ao que você tem a dizer. Contrate profissionais de
         Libras e recursos de acessibilidade para eventos presenciais, online e conteúdos gravados.
       </p>
-      <div class="grid">
-        @for (s of servicos; track s.id) {
-          <article class="card" [id]="s.id">
-            <h3>{{ s.titulo }}</h3>
-            <p>{{ s.texto }}</p>
-          </article>
-        }
-      </div>
+      @if (servicos().length) {
+        <div class="grid">
+          @for (s of servicos(); track s.id) {
+            <article class="card" [id]="ancoraServico(s)">
+              <h3>{{ s.titulo }}</h3>
+              <p class="servico-descricao">{{ s.descricao }}</p>
+            </article>
+          }
+        </div>
+      }
       <p class="servicos-cta">
-        <a class="btn btn-primary" href="#contato">Solicitar orçamento</a>
+        <a class="btn btn-primary" href="#contato">Entre em contato com a gente</a>
       </p>
     </section>
 
@@ -174,8 +175,8 @@
       <p class="eyebrow">Fale Conosco</p>
       <h2>Vamos conversar</h2>
       <p>
-        Precisa contratar um intérprete de Libras, legendar um vídeo ou tornar o seu evento acessível? Conte o que você
-        precisa — data, local e duração — e enviamos um orçamento.
+        Precisa de um intérprete de Libras, quer legendar um vídeo ou tornar o seu evento acessível? Entre em contato com
+        a gente e conte um pouco sobre o que você imagina — data, local e duração ajudam. Vamos adorar conversar.
       </p>
 
       <div class="contact-grid">

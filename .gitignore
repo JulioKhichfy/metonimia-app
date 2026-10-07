@@ -10,6 +10,7 @@ frontend/.angular/
 backend/target/
 backend/data/
 backend/uploads/
+backend/privado/
 
 # IDEs / SO
 .idea/

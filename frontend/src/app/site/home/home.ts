@@ -1,10 +1,13 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CONTATO } from '../../core/config';
-import { dadosEstruturados, PERGUNTAS, SERVICOS } from '../../core/seo';
+import { Servico } from '../../core/models';
+import { ancoraServico, dadosEstruturados, PERGUNTAS, SERVICOS_PADRAO } from '../../core/seo';
+import { ServicoService } from '../../core/servico.service';
 import { Agenda } from '../agenda/agenda';
+import { VideoDestaque } from '../video-destaque/video-destaque';
 
 const ID_JSON_LD = 'dados-estruturados';
 
@@ -17,7 +20,7 @@ interface RespostaFormSubmit {
 
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule, Agenda],
+  imports: [ReactiveFormsModule, Agenda, VideoDestaque],
   templateUrl: './home.html',
 })
 export class Home {
@@ -26,7 +29,9 @@ export class Home {
   private readonly feedback = viewChild<ElementRef<HTMLElement>>('feedback');
 
   protected readonly contato = CONTATO;
-  protected readonly servicos = SERVICOS;
+  /** Começa com o retrato do build (HTML pré-renderizado) e é trocado pela lista da API no navegador. */
+  protected readonly servicos = signal<Servico[]>(SERVICOS_PADRAO);
+  protected readonly ancoraServico = ancoraServico;
   protected readonly perguntas = PERGUNTAS;
   protected readonly whatsappUrl = `https://wa.me/${CONTATO.whatsappNumero}?text=${encodeURIComponent(CONTATO.whatsappMensagem)}`;
   protected readonly ano = new Date().getFullYear();
@@ -54,15 +59,26 @@ export class Home {
   ];
 
   constructor() {
-    // Dados estruturados (schema.org) no <head>. Gravados no HTML durante a pré-renderização;
-    // no navegador o script já existe e não é duplicado.
+    // Dados estruturados (schema.org) no <head>: gravados no HTML durante a pré-renderização e
+    // atualizados no navegador quando a lista de serviços chega da API.
     const doc = inject(DOCUMENT);
-    if (!doc.getElementById(ID_JSON_LD)) {
-      const script = doc.createElement('script');
-      script.type = 'application/ld+json';
-      script.id = ID_JSON_LD;
-      script.textContent = JSON.stringify(dadosEstruturados()).replace(/</g, '\\u003c');
-      doc.head.appendChild(script);
+    effect(() => {
+      let script = doc.getElementById(ID_JSON_LD);
+      if (!script) {
+        script = doc.createElement('script');
+        script.setAttribute('type', 'application/ld+json');
+        script.id = ID_JSON_LD;
+        doc.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(dadosEstruturados(this.servicos())).replace(/</g, '\\u003c');
+    });
+
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      const sub = inject(ServicoService).listarPublicos().subscribe({
+        next: (lista) => this.servicos.set(lista),
+        error: () => {}, // mantém o retrato do build
+      });
+      inject(DestroyRef).onDestroy(() => sub.unsubscribe());
     }
   }
 

@@ -11,11 +11,21 @@
     <span class="dash-titulo">EVENTOS</span>
     <span class="dash-texto">Criar, editar e excluir eventos</span>
   </a>
+  <a routerLink="/admin/servicos" class="dash-botao">
+    <mat-icon aria-hidden="true">handshake</mat-icon>
+    <span class="dash-titulo">SERVIÇOS</span>
+    <span class="dash-texto">Criar, editar e excluir serviços</span>
+  </a>
+  <a routerLink="/admin/interpretes" class="dash-botao">
+    <mat-icon aria-hidden="true">sign_language</mat-icon>
+    <span class="dash-titulo">INTÉRPRETES</span>
+    <span class="dash-texto">Cadastrar intérpretes e enviar mensagens</span>
+  </a>
   <button type="button" class="dash-botao" (click)="baixarBackup()" [disabled]="baixando()">
     <mat-icon aria-hidden="true">{{ baixando() ? 'hourglass_top' : 'backup' }}</mat-icon>
     <span class="dash-titulo">BACKUP</span>
     <span class="dash-texto">
-      {{ baixando() ? 'Gerando backup…' : 'Baixar uma cópia do banco de dados (palestras e eventos)' }}
+      {{ baixando() ? 'Gerando backup…' : 'Baixar uma cópia do banco de dados (palestras, eventos, serviços e intérpretes)' }}
     </span>
   </button>
 </div>

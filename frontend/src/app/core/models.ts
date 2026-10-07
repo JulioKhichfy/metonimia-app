@@ -38,6 +38,59 @@ export interface PublicacaoPayload {
   midias: Midia[];
 }
 
+export interface Servico {
+  id: number;
+  titulo: string;
+  /** Texto simples; quebras de linha são preservadas na exibição. */
+  descricao: string;
+}
+
+export type ServicoPayload = Pick<Servico, 'titulo' | 'descricao'>;
+
+export interface Interprete {
+  id: number;
+  nome: string;
+  /** yyyy-MM-dd */
+  dataNascimento: string;
+  endereco: string;
+  email: string | null;
+  /** Só dígitos: 21999990000 */
+  celular: string;
+  celularWhatsapp: boolean;
+  temFoto: boolean;
+  atualizadoEm: string;
+}
+
+export interface InterpretePayload {
+  nome: string;
+  dataNascimento: string;
+  endereco: string;
+  email: string | null;
+  celular: string;
+  celularWhatsapp: boolean;
+  removerFoto: boolean;
+}
+
+export type CanalMensagem = 'EMAIL' | 'WHATSAPP';
+
+export interface MensagemPayload {
+  assunto: string;
+  texto: string;
+  canais: CanalMensagem[];
+  todos: boolean;
+  interpreteIds: number[];
+}
+
+export interface MensagemResultado {
+  emailsEnviados: string[];
+  emailsComFalha: string[];
+  semEmail: string[];
+  whatsapp: { interpreteId: number; nome: string; link: string }[];
+  semWhatsapp: string[];
+  copiaEnviadaPara: string | null;
+  avisos: string[];
+}
+
 export interface Rotulos {
   singular: string;
   plural: string;

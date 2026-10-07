@@ -68,6 +68,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- E-mail (mensagens para intérpretes, via SMTP) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
     <!-- Sanitização do HTML vindo do editor -->
     <dependency>
       <groupId>org.jsoup</groupId>
