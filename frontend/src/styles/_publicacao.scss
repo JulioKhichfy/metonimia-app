@@ -1,3 +1,5 @@
+@use 'fontes';
+
 /* Card de palestra/evento — usado no site e na pré-visualização do painel */
 .pub-card {
   border: 1px solid var(--line);
@@ -7,6 +9,50 @@
   flex-direction: column;
   gap: 16px;
   overflow: hidden;
+}
+
+/* Cards em sequência no site: encostados, com degradê nas bordas (ver PublicacaoCard.fundo)
+   para suavizar a passagem entre cores muito diferentes. */
+.pub-pilha {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  > * > .pub-card {
+    border: 0;
+    border-radius: 0;
+    padding-block: clamp(34px, 5vw, 52px);
+    position: relative;
+  }
+  /* fio discreto no meio da transição, para separar cards de mesma cor */
+  > * + * > .pub-card::before {
+    content: ""; position: absolute; top: 0; left: 50%; translate: -50% 0;
+    width: min(160px, 40%); height: 1px; background: currentColor; opacity: .18;
+  }
+}
+
+/* Rodapé com as redes sociais */
+.pub-rodape {
+  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+.pub-redes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.pub-card .pub-rede { /* .pub-card na frente para vencer ".site a" */
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px 8px 10px; border-radius: 999px;
+  background: #fff; color: #111; border: 1px solid #d9d9d9;
+  font-weight: 700; font-size: 1rem; line-height: 1.2; text-decoration: none;
+  transition: transform .12s, box-shadow .15s;
+  &:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, .15); }
+  @media (prefers-reduced-motion: reduce) { transition: none; &:hover { transform: none; } }
+}
+.logo-rede { display: inline-flex; flex: 0 0 auto; }
+.logo-rede svg { width: 24px; height: 24px; display: block; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .pub-cabecalho p { margin: 0; }
 .pub-data { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; line-height: 1.25; text-transform: none; }
@@ -42,9 +88,7 @@
   .ql-size-small { font-size: .78em; }
   .ql-size-large { font-size: 1.4em; }
   .ql-size-huge { font-size: 2em; line-height: 1.2; }
-  .ql-font-serif { font-family: Georgia, "Times New Roman", serif; }
-  .ql-font-monospace { font-family: ui-monospace, Menlo, Consolas, monospace; }
-  .ql-font-trebuchet { font-family: var(--font-display); }
+  @include fontes.classes-de-fonte;
   .ql-align-center, .ql-align-right, .ql-align-justify { max-width: none; }
   .ql-align-center { text-align: center; }
   .ql-align-right { text-align: right; }

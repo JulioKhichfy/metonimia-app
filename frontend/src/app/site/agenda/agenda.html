@@ -14,18 +14,34 @@
     @default {
       <div class="agenda-bloco" [id]="r().idFuturas">
         <h3>{{ r().tituloFuturas }}</h3>
-        @for (p of futuras(); track p.id) {
-          <app-publicacao-card [publicacao]="p" />
-        } @empty {
+        @if (futuras().length) {
+          <div class="pub-pilha">
+            @for (p of futuras(); track p.id; let i = $index) {
+              <app-publicacao-card
+                [publicacao]="p"
+                [corAnterior]="futuras()[i - 1]?.corFundo ?? null"
+                [corProxima]="futuras()[i + 1]?.corFundo ?? null"
+              />
+            }
+          </div>
+        } @else {
           <p class="agenda-vazio">{{ r().vazioFuturas }}</p>
         }
       </div>
 
       <div class="agenda-bloco" [id]="r().idPassadas">
         <h3>{{ r().tituloPassadas }}</h3>
-        @for (p of passadasVisiveis(); track p.id) {
-          <app-publicacao-card [publicacao]="p" />
-        } @empty {
+        @if (passadasVisiveis().length) {
+          <div class="pub-pilha">
+            @for (p of passadasVisiveis(); track p.id; let i = $index) {
+              <app-publicacao-card
+                [publicacao]="p"
+                [corAnterior]="passadasVisiveis()[i - 1]?.corFundo ?? null"
+                [corProxima]="passadasVisiveis()[i + 1]?.corFundo ?? null"
+              />
+            }
+          </div>
+        } @else {
           <p class="agenda-vazio">{{ r().vazioPassadas }}</p>
         }
         @if (passadas().length > passadasVisiveis().length) {

@@ -1,12 +1,15 @@
 package br.com.metonimia;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
@@ -81,6 +84,57 @@ class PublicacaoApiTest {
         mvc.perform(post("/api/admin/publicacoes").header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content(corpo))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void salvaCorDaFonteELinksDeRedesSociais() throws Exception {
+        String token = login();
+        String corpo = """
+                {"tipo":"EVENTO","dataHora":"2026-01-01T12:00:00Z","local":"Teatro","descricaoHtml":"",
+                 "corFundo":"#111111","corTexto":"#F2C200","linkYoutube":"https://www.youtube.com/@metonimia",
+                 "linkInstagram":"instagram.com/metonimia","linkX":"","midias":[]}
+                """;
+        mvc.perform(post("/api/admin/publicacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.corTexto").value("#f2c200"))
+                .andExpect(jsonPath("$.linkYoutube").value("https://www.youtube.com/@metonimia"))
+                .andExpect(jsonPath("$.linkInstagram").value("https://instagram.com/metonimia"))
+                .andExpect(jsonPath("$.linkX").doesNotExist());
+    }
+
+    @Test
+    void rejeitaLinkDeRedeSocialDeOutroSite() throws Exception {
+        String token = login();
+        String corpo = """
+                {"tipo":"EVENTO","dataHora":"2026-01-01T12:00:00Z","local":"X","descricaoHtml":"",
+                 "corFundo":"#ffffff","linkX":"https://site-falso.com/x.com","midias":[]}
+                """;
+        mvc.perform(post("/api/admin/publicacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void backupExigeLoginEGeraSql() throws Exception {
+        mvc.perform(get("/api/admin/backup")).andExpect(status().isUnauthorized());
+
+        String token = login();
+        String corpo = """
+                {"tipo":"PALESTRA","dataHora":"2026-01-01T12:00:00Z","local":"Sala d'Água","descricaoHtml":"",
+                 "corFundo":"#ffffff","midias":[]}
+                """;
+        mvc.perform(post("/api/admin/publicacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated());
+
+        String sql = mvc.perform(get("/api/admin/backup").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", containsString("attachment")))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        if (!sql.contains("INSERT INTO publicacao") || !sql.contains("'Sala d''Água'") || !sql.contains("COMMIT;")) {
+            throw new AssertionError("Backup inesperado:\n" + sql);
+        }
     }
 
     private String login() throws Exception {

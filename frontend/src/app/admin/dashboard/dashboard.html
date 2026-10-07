@@ -11,4 +11,14 @@
     <span class="dash-titulo">EVENTOS</span>
     <span class="dash-texto">Criar, editar e excluir eventos</span>
   </a>
+  <button type="button" class="dash-botao" (click)="baixarBackup()" [disabled]="baixando()">
+    <mat-icon aria-hidden="true">{{ baixando() ? 'hourglass_top' : 'backup' }}</mat-icon>
+    <span class="dash-titulo">BACKUP</span>
+    <span class="dash-texto">
+      {{ baixando() ? 'Gerando backup…' : 'Baixar uma cópia do banco de dados (palestras e eventos)' }}
+    </span>
+  </button>
 </div>
+@if (status(); as s) {
+  <p class="dash-status" [class.erro]="s.erro" role="status">{{ s.texto }}</p>
+}

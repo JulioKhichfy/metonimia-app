@@ -2,6 +2,7 @@
   class="pub-card"
   [id]="ancora()"
   [style.background-color]="publicacao().corFundo"
+  [style.background-image]="degrade()"
   [style.color]="corTexto()"
 >
   <header class="pub-cabecalho">
@@ -48,5 +49,21 @@
         <figcaption>{{ video.descricao }}</figcaption>
       }
     </figure>
+  }
+
+  @if (redes().length) {
+    <footer class="pub-rodape">
+      <ul class="pub-redes">
+        @for (item of redes(); track item.rede.id) {
+          <li>
+            <a class="pub-rede" [href]="item.url" target="_blank" rel="noopener noreferrer">
+              <app-logo-rede [rede]="item.rede.id" />
+              <span>{{ item.rede.nome }}</span>
+              <span class="sr-only">(abre em nova aba)</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </footer>
   }
 </article>

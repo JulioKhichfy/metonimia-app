@@ -44,6 +44,19 @@ public class Publicacao {
     @Column(name = "cor_fundo", nullable = false, length = 7)
     private String corFundo = "#f6eef8";
 
+    /** Null = automática (preto ou branco conforme o contraste com o fundo). */
+    @Column(name = "cor_texto", length = 7)
+    private String corTexto;
+
+    @Column(name = "link_youtube", length = 500)
+    private String linkYoutube;
+
+    @Column(name = "link_instagram", length = 500)
+    private String linkInstagram;
+
+    @Column(name = "link_x", length = 500)
+    private String linkX;
+
     @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("ordem ASC")
     private List<Midia> midias = new ArrayList<>();
@@ -118,6 +131,38 @@ public class Publicacao {
 
     public void setCorFundo(String corFundo) {
         this.corFundo = corFundo;
+    }
+
+    public String getCorTexto() {
+        return corTexto;
+    }
+
+    public void setCorTexto(String corTexto) {
+        this.corTexto = corTexto;
+    }
+
+    public String getLinkYoutube() {
+        return linkYoutube;
+    }
+
+    public void setLinkYoutube(String linkYoutube) {
+        this.linkYoutube = linkYoutube;
+    }
+
+    public String getLinkInstagram() {
+        return linkInstagram;
+    }
+
+    public void setLinkInstagram(String linkInstagram) {
+        this.linkInstagram = linkInstagram;
+    }
+
+    public String getLinkX() {
+        return linkX;
+    }
+
+    public void setLinkX(String linkX) {
+        this.linkX = linkX;
     }
 
     public List<Midia> getMidias() {

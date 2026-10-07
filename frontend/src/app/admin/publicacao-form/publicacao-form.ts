@@ -10,11 +10,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { QuillEditorComponent } from 'ngx-quill';
-import { corTextoPara, urlIncorporacao } from '../../core/midia';
+import { contraste, corTextoPara, urlIncorporacao } from '../../core/midia';
 import { Midia, Publicacao, PublicacaoPayload, ROTULOS, TipoPublicacao } from '../../core/models';
 import { PublicacaoService } from '../../core/publicacao.service';
+import { normalizarLinkRede, REDES, validadorLinkRede } from '../../core/redes';
 import { LIMITE_IMAGEM_MB, LIMITE_VIDEO_MB, UploadService } from '../../core/upload.service';
-import { FUNDOS, MODULOS_QUILL, OPCOES_QUILL } from './editor-config';
+import { LogoRede } from '../../shared/logo-rede';
+import { CORES_TEXTO, FUNDOS, MODULOS_QUILL, OPCOES_QUILL } from './editor-config';
+import { SeletorCor } from './seletor-cor';
+
+const [YOUTUBE, INSTAGRAM, X] = REDES;
 
 interface UploadEmAndamento {
   id: number;
@@ -36,6 +41,8 @@ let proximoUpload = 0;
     MatIconModule,
     MatProgressBarModule,
     QuillEditorComponent,
+    SeletorCor,
+    LogoRede,
   ],
   templateUrl: './publicacao-form.html',
 })
@@ -51,6 +58,8 @@ export class PublicacaoForm implements OnInit {
 
   protected readonly r = computed(() => ROTULOS[this.tipo()]);
   protected readonly fundos = FUNDOS;
+  protected readonly coresTexto = CORES_TEXTO;
+  protected readonly redes = REDES;
   protected readonly modulosQuill = MODULOS_QUILL;
   protected readonly opcoesQuill = OPCOES_QUILL;
   protected readonly limiteImagemMb = LIMITE_IMAGEM_MB;
@@ -61,7 +70,12 @@ export class PublicacaoForm implements OnInit {
     hora: new FormControl<Date | null>(null, Validators.required),
     local: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(300)] }),
     corFundo: new FormControl('#f6eef8', { nonNullable: true, validators: Validators.pattern(/^#[0-9a-fA-F]{6}$/) }),
+    /** Null = automática. */
+    corTexto: new FormControl<string | null>(null, Validators.pattern(/^#[0-9a-fA-F]{6}$/)),
     descricaoHtml: new FormControl<string | null>(''),
+    linkYoutube: new FormControl('', { nonNullable: true, validators: validadorLinkRede(YOUTUBE) }),
+    linkInstagram: new FormControl('', { nonNullable: true, validators: validadorLinkRede(INSTAGRAM) }),
+    linkX: new FormControl('', { nonNullable: true, validators: validadorLinkRede(X) }),
   });
   protected readonly linkVideo = new FormControl('', { nonNullable: true });
 
@@ -74,9 +88,17 @@ export class PublicacaoForm implements OnInit {
   protected readonly erroLink = signal('');
 
   private readonly corFundo = toSignal(this.form.controls.corFundo.valueChanges, { initialValue: '#f6eef8' });
+  private readonly corTextoEscolhida = toSignal(this.form.controls.corTexto.valueChanges, { initialValue: null });
+  protected readonly corTextoAutomatica = computed(() => corTextoPara(this.corFundo()));
+  protected readonly corTexto = computed(() => this.corTextoEscolhida() ?? this.corTextoAutomatica());
+  /** WCAG AA pede 4,5:1 para texto normal. */
+  protected readonly contrasteBaixo = computed(() => {
+    const razao = contraste(this.corFundo(), this.corTexto());
+    return razao < 4.5 ? razao.toFixed(1).replace('.', ',') : null;
+  });
   protected readonly estiloEditor = computed(() => ({
     backgroundColor: this.corFundo(),
-    color: corTextoPara(this.corFundo()),
+    color: this.corTexto(),
     minHeight: '180px',
     fontSize: '1rem',
   }));
@@ -90,7 +112,11 @@ export class PublicacaoForm implements OnInit {
         hora: quando,
         local: p.local,
         corFundo: p.corFundo || '#f6eef8',
+        corTexto: p.corTexto ?? null,
         descricaoHtml: p.descricaoHtml ?? '',
+        linkYoutube: p.linkYoutube ?? '',
+        linkInstagram: p.linkInstagram ?? '',
+        linkX: p.linkX ?? '',
       });
       this.midias.set(p.midias.map((m) => ({ ...m })));
     }
@@ -174,6 +200,10 @@ export class PublicacaoForm implements OnInit {
       local: v.local.trim(),
       descricaoHtml: v.descricaoHtml ?? '',
       corFundo: v.corFundo,
+      corTexto: v.corTexto,
+      linkYoutube: normalizarLinkRede(v.linkYoutube, YOUTUBE),
+      linkInstagram: normalizarLinkRede(v.linkInstagram, INSTAGRAM),
+      linkX: normalizarLinkRede(v.linkX, X),
       midias: this.midias(),
     };
 

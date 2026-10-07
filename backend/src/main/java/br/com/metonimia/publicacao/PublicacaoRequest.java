@@ -15,4 +15,9 @@ public record PublicacaoRequest(
         @NotBlank(message = "informe o local") @Size(max = 300, message = "local com no máximo 300 caracteres") String local,
         @Size(max = 200_000, message = "descrição longa demais") String descricaoHtml,
         @NotNull @Pattern(regexp = "^#[0-9a-fA-F]{6}$", message = "cor de fundo deve estar no formato #RRGGBB") String corFundo,
+        /** Null = automática. */
+        @Pattern(regexp = "^#[0-9a-fA-F]{6}$", message = "cor da fonte deve estar no formato #RRGGBB") String corTexto,
+        @Size(max = 500, message = "link do YouTube longo demais") String linkYoutube,
+        @Size(max = 500, message = "link do Instagram longo demais") String linkInstagram,
+        @Size(max = 500, message = "link do X longo demais") String linkX,
         @Size(max = 40, message = "no máximo 40 fotos e vídeos") List<@Valid MidiaDto> midias) {}

@@ -1,0 +1,33 @@
+@use 'sass:list';
+@use 'sass:string';
+
+/* Fontes do editor (Quill). Mantenha em sincronia com FONTES em admin/publicacao-form/editor-config.ts.
+   valor: (nome exibido no menu, família CSS) */
+$fontes: (
+  atkinson: ('Atkinson (alta legibilidade)', '"Atkinson Hyperlegible", Verdana, sans-serif'),
+  lexend: ('Lexend (leitura fácil)', 'Lexend, Verdana, sans-serif'),
+  trebuchet: ('Trebuchet (títulos)', '"Trebuchet MS", "Segoe UI", system-ui, sans-serif'),
+  arial: ('Arial', 'Arial, Helvetica, sans-serif'),
+  verdana: ('Verdana', 'Verdana, Geneva, sans-serif'),
+  roboto: ('Roboto', 'Roboto, Arial, sans-serif'),
+  open-sans: ('Open Sans', '"Open Sans", Arial, sans-serif'),
+  lato: ('Lato', 'Lato, Arial, sans-serif'),
+  montserrat: ('Montserrat', 'Montserrat, Arial, sans-serif'),
+  poppins: ('Poppins', 'Poppins, Arial, sans-serif'),
+  serif: ('Georgia (serifada)', 'Georgia, "Times New Roman", serif'),
+  times: ('Times New Roman', '"Times New Roman", Times, serif'),
+  merriweather: ('Merriweather', 'Merriweather, Georgia, serif'),
+  lora: ('Lora', 'Lora, Georgia, serif'),
+  playfair: ('Playfair Display', '"Playfair Display", Georgia, serif'),
+  oswald: ('Oswald (condensada)', 'Oswald, "Arial Narrow", sans-serif'),
+  dancing: ('Dancing Script (manuscrita)', '"Dancing Script", cursive'),
+  pacifico: ('Pacifico (decorativa)', 'Pacifico, cursive'),
+  monospace: ('Monoespaçada', 'ui-monospace, Menlo, Consolas, monospace'),
+);
+
+/* Classes .ql-font-* usadas no texto salvo */
+@mixin classes-de-fonte {
+  @each $valor, $fonte in $fontes {
+    .ql-font-#{$valor} { font-family: string.unquote(list.nth($fonte, 2)); }
+  }
+}

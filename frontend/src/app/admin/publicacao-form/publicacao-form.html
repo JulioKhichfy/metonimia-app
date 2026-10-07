@@ -36,26 +36,23 @@
   <!-- 3. Descrição -->
   <fieldset class="pf-bloco">
     <legend>3. Descrição</legend>
-    <div class="pf-fundo">
-      <span id="rotulo-fundo">Cor de fundo</span>
-      <div class="pf-amostras" role="group" aria-labelledby="rotulo-fundo">
-        @for (f of fundos; track f.cor) {
-          <button
-            type="button"
-            class="pf-amostra"
-            [style.background]="f.cor"
-            [class.ativa]="form.controls.corFundo.value.toLowerCase() === f.cor"
-            [attr.aria-label]="f.nome"
-            [attr.aria-pressed]="form.controls.corFundo.value.toLowerCase() === f.cor"
-            (click)="form.controls.corFundo.setValue(f.cor)"
-          ></button>
-        }
-        <label class="pf-cor-livre">
-          <input type="color" formControlName="corFundo" aria-label="Outra cor de fundo" />
-          Outra cor
-        </label>
-      </div>
-    </div>
+    <app-seletor-cor formControlName="corFundo" rotulo="Cor de fundo" [amostras]="fundos" />
+    <app-seletor-cor
+      formControlName="corTexto"
+      rotulo="Cor da fonte"
+      [amostras]="coresTexto"
+      [permitirAutomatica]="true"
+      [corAutomatica]="corTextoAutomatica()"
+    />
+    @if (contrasteBaixo(); as razao) {
+      <p class="pf-aviso" role="status">
+        <mat-icon aria-hidden="true">warning</mat-icon>
+        <span>
+          Contraste baixo entre a fonte e o fundo ({{ razao }}:1). Pessoas com baixa visão podem ter dificuldade para ler;
+          o recomendado é pelo menos 4,5:1. Use “Automática” para o sistema escolher preto ou branco.
+        </span>
+      </p>
+    }
     <quill-editor
       class="pf-editor"
       formControlName="descricaoHtml"
@@ -67,7 +64,8 @@
       [styles]="estiloEditor()"
     />
     <p class="pf-dica">
-      Selecione um trecho para mudar fonte, tamanho, cor, negrito ou itálico. O fundo do editor mostra como ficará no site.
+      A cor da fonte vale para todo o texto. Para mudar só um trecho (fonte, tamanho, cor, negrito ou itálico), selecione-o
+      e use a barra do editor. O editor mostra como ficará no site.
     </p>
   </fieldset>
 
@@ -139,6 +137,22 @@
         }
       </ul>
     }
+  </fieldset>
+
+  <!-- 6. Redes sociais -->
+  <fieldset class="pf-bloco">
+    <legend>6. Redes sociais (opcional)</legend>
+    <div class="pf-redes">
+      @for (rede of redes; track rede.id) {
+        <mat-form-field appearance="outline" class="pf-largo">
+          <mat-label>Link do {{ rede.nome }}</mat-label>
+          <app-logo-rede matIconPrefix [rede]="rede.id" />
+          <input matInput type="url" [formControlName]="rede.campo" [placeholder]="rede.exemplo" inputmode="url" />
+          <mat-error>Use um link do {{ rede.nome }} ({{ rede.dominios.join(' ou ') }}).</mat-error>
+        </mat-form-field>
+      }
+    </div>
+    <p class="pf-dica">Os links preenchidos aparecem no rodapé d{{ r().artigo }} {{ r().singular }}, com o logotipo de cada rede.</p>
   </fieldset>
 
   @for (u of enviando(); track u.id) {

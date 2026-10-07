@@ -10,6 +10,10 @@ public record PublicacaoResponse(
         String local,
         String descricaoHtml,
         String corFundo,
+        String corTexto,
+        String linkYoutube,
+        String linkInstagram,
+        String linkX,
         List<MidiaDto> midias,
         boolean futura,
         Instant atualizadoEm) {
@@ -22,6 +26,10 @@ public record PublicacaoResponse(
                 p.getLocal(),
                 p.getDescricaoHtml(),
                 p.getCorFundo(),
+                p.getCorTexto(),
+                p.getLinkYoutube(),
+                p.getLinkInstagram(),
+                p.getLinkX(),
                 p.getMidias().stream().map(MidiaDto::de).toList(),
                 p.futura(agora),
                 p.getAtualizadoEm());

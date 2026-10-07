@@ -16,6 +16,11 @@ export interface Publicacao {
   local: string;
   descricaoHtml: string;
   corFundo: string;
+  /** Null = automática (preto ou branco conforme o fundo). */
+  corTexto?: string | null;
+  linkYoutube?: string | null;
+  linkInstagram?: string | null;
+  linkX?: string | null;
   midias: Midia[];
   atualizadoEm: string;
 }
@@ -26,6 +31,10 @@ export interface PublicacaoPayload {
   local: string;
   descricaoHtml: string;
   corFundo: string;
+  corTexto: string | null;
+  linkYoutube: string | null;
+  linkInstagram: string | null;
+  linkX: string | null;
   midias: Midia[];
 }
 

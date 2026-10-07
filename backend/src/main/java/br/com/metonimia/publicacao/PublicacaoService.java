@@ -1,6 +1,7 @@
 package br.com.metonimia.publicacao;
 
 import br.com.metonimia.common.HtmlSanitizer;
+import br.com.metonimia.publicacao.RedeSocialValidator.Rede;
 import br.com.metonimia.upload.ArmazenamentoService;
 import java.time.Instant;
 import java.util.HashSet;
@@ -20,13 +21,16 @@ public class PublicacaoService {
     private final PublicacaoRepository repositorio;
     private final HtmlSanitizer sanitizer;
     private final MidiaValidator midiaValidator;
+    private final RedeSocialValidator redeSocialValidator;
     private final ArmazenamentoService armazenamento;
 
     public PublicacaoService(PublicacaoRepository repositorio, HtmlSanitizer sanitizer,
-            MidiaValidator midiaValidator, ArmazenamentoService armazenamento) {
+            MidiaValidator midiaValidator, RedeSocialValidator redeSocialValidator,
+            ArmazenamentoService armazenamento) {
         this.repositorio = repositorio;
         this.sanitizer = sanitizer;
         this.midiaValidator = midiaValidator;
+        this.redeSocialValidator = redeSocialValidator;
         this.armazenamento = armazenamento;
     }
 
@@ -82,6 +86,10 @@ public class PublicacaoService {
         p.setLocal(req.local().strip());
         p.setDescricaoHtml(sanitizer.limpar(req.descricaoHtml()));
         p.setCorFundo(req.corFundo().toLowerCase());
+        p.setCorTexto(req.corTexto() == null ? null : req.corTexto().toLowerCase());
+        p.setLinkYoutube(redeSocialValidator.validar(req.linkYoutube(), Rede.YOUTUBE));
+        p.setLinkInstagram(redeSocialValidator.validar(req.linkInstagram(), Rede.INSTAGRAM));
+        p.setLinkX(redeSocialValidator.validar(req.linkX(), Rede.X));
         List<MidiaDto> midias = req.midias() == null ? List.of() : req.midias();
         p.substituirMidias(midias.stream().map(midiaValidator::validar).toList());
     }
